@@ -20,7 +20,7 @@ function App() {
       // Wait for the custom element to be defined
       await customElements.whenDefined("atomic-search-interface");
       await searchInterface.initialize({
-        accessToken: "YOUR_API_KEY",
+        accessToken: "xx4e0a0e64-3530-4114-b061-91e997542bec",
         organizationId: "YOUR_ORG_ID",
       });
     };
