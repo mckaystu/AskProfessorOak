@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import "./App.css";
 
 // Tell TypeScript/React to ignore the custom Atomic tags
@@ -12,11 +12,31 @@ declare global {
 
 function App() {
   const [hasQuery, setHasQuery] = useState(false);
-  const resultTemplateRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
     const init = async () => {
       await customElements.whenDefined("atomic-search-interface");
+
+      // Inject the template into atomic-result-template via DOM
+      const resultTemplate = document.querySelector("atomic-result-template");
+      if (resultTemplate && !resultTemplate.querySelector("template")) {
+        const template = document.createElement("template");
+        template.innerHTML = `
+          <atomic-result-section-visual>
+            <atomic-result-image field="pokemon_thumbnail"></atomic-result-image>
+          </atomic-result-section-visual>
+          <atomic-result-section-title>
+            <atomic-result-link></atomic-result-link>
+          </atomic-result-section-title>
+          <atomic-result-section-excerpt>
+            <atomic-result-text field="excerpt"></atomic-result-text>
+          </atomic-result-section-excerpt>
+          <atomic-result-section-bottom-metadata>
+            <atomic-result-badge field="poketype"></atomic-result-badge>
+          </atomic-result-section-bottom-metadata>
+        `;
+        resultTemplate.appendChild(template);
+      }
 
       const searchInterface = document.querySelector("atomic-search-interface") as any;
       if (!searchInterface) return;
@@ -41,29 +61,6 @@ function App() {
     };
 
     init();
-  }, []);
-
-  useEffect(() => {
-    const host = resultTemplateRef.current;
-    if (!host || host.querySelector("template")) return;
-
-    const template = document.createElement("template");
-    template.innerHTML = `
-      <atomic-result-section-visual>
-        <img loading="lazy" src="\${raw.pokemon_thumbnail}" style="max-height:160px;width:100%;object-fit:contain;" />
-      </atomic-result-section-visual>
-      <atomic-result-section-title>
-        <atomic-result-link></atomic-result-link>
-      </atomic-result-section-title>
-      <atomic-result-section-excerpt>
-        <atomic-result-text field="excerpt"></atomic-result-text>
-      </atomic-result-section-excerpt>
-      <atomic-result-section-bottom-metadata>
-        <atomic-result-badge field="poketype"></atomic-result-badge>
-      </atomic-result-section-bottom-metadata>
-    `;
-
-    host.appendChild(template);
   }, []);
 
   return (
