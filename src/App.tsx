@@ -87,6 +87,10 @@ function App() {
       const imageElements = queryRoot
         ? Array.from(queryRoot.querySelectorAll<HTMLImageElement>("img.pokemon-thumbnail"))
         : [];
+
+      if (!imageElements.length || !latestResults.length) return;
+
+      await Promise.all(
         imageElements.map(async (img, index) => {
           const result = latestResults[index];
           if (!result) return;
