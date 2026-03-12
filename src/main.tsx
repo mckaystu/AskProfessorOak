@@ -5,7 +5,9 @@ import App from "./App.tsx";
 import "./index.css";
 
 if (!customElements.get("atomic-search-interface")) {
-  defineCustomElements();
+  defineCustomElements(window, {
+    resourcesUrl: "https://static.cloud.coveo.com/atomic/v3/",
+  });
 }
 
 createRoot(document.getElementById("root")!).render(<App />);
