@@ -71,7 +71,7 @@ function App() {
                 field="poketype"
                 label="Pokemon Type"
                 with-search="false"
-                display-values-as="link"
+                display-values-as="checkbox"
               ></atomic-facet>
             </atomic-facet-manager>
           </atomic-layout-section>
