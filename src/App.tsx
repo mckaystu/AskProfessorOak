@@ -111,12 +111,7 @@ function App() {
             </atomic-layout-section>
 
             <atomic-layout-section section="results">
-              <atomic-result-list display="list" image-size="small">
-                <atomic-result-template></atomic-result-template>
-              </atomic-result-list>
-
-              <atomic-query-error></atomic-query-error>
-              <atomic-no-results></atomic-no-results>
+              <div id="atomic-results-container"></div>
             </atomic-layout-section>
 
             <atomic-layout-section section="pagination">
