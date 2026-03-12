@@ -24,10 +24,10 @@ function App() {
               <atomic-result-section-visual>
                 <img
                   class="pokemon-thumbnail"
-                  src="{{raw.pokemon_thumbnail}}"
+                  src="/placeholder.svg"
                   alt="Pokemon thumbnail"
                   loading="lazy"
-                  onerror="this.onerror=null;this.src='/placeholder.svg';"
+                  data-pokemon-image="true"
                 />
               </atomic-result-section-visual>
               <atomic-result-section-title>
@@ -47,6 +47,64 @@ function App() {
       `;
     }
 
+    const spriteCache = new Map<string, string>();
+    let latestResults: any[] = [];
+
+    const getPokemonName = (result: any) => {
+      const clickUri = result?.clickUri || result?.uri || "";
+      const match = clickUri.match(/\/pokedex\/([^/?#]+)/i);
+      return match?.[1]?.toLowerCase() ?? null;
+    };
+
+    const fetchSpriteUrl = async (name: string) => {
+      const cached = spriteCache.get(name);
+      if (cached) return cached;
+
+      try {
+        const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${encodeURIComponent(name)}`);
+        if (!response.ok) throw new Error("Failed to fetch sprite");
+
+        const data = await response.json();
+        const spriteUrl =
+          data?.sprites?.other?.["official-artwork"]?.front_default ||
+          data?.sprites?.other?.home?.front_default ||
+          data?.sprites?.front_default ||
+          "/placeholder.svg";
+
+        spriteCache.set(name, spriteUrl);
+        return spriteUrl;
+      } catch {
+        spriteCache.set(name, "/placeholder.svg");
+        return "/placeholder.svg";
+      }
+    };
+
+    const hydrateResultImages = async () => {
+      const imageElements = Array.from(
+        document.querySelectorAll<HTMLImageElement>("#atomic-results-container img[data-pokemon-image='true']")
+      );
+
+      await Promise.all(
+        imageElements.map(async (img, index) => {
+          const result = latestResults[index];
+          if (!result) return;
+
+          const pokemonName = getPokemonName(result);
+          if (!pokemonName) {
+            img.src = "/placeholder.svg";
+            return;
+          }
+
+          const resultKey = result.uniqueId || pokemonName;
+          if (img.dataset.resultKey === resultKey) return;
+
+          img.dataset.resultKey = resultKey;
+          img.alt = `${pokemonName} thumbnail`;
+          img.src = await fetchSpriteUrl(pokemonName);
+        })
+      );
+    };
+
     const init = async () => {
       await customElements.whenDefined("atomic-search-interface");
 
@@ -61,10 +119,20 @@ function App() {
 
         const engine = searchInterface.engine;
         if (engine) {
+          const observer = new MutationObserver(() => {
+            void hydrateResultImages();
+          });
+
+          if (resultsContainer) {
+            observer.observe(resultsContainer, { childList: true, subtree: true });
+          }
+
           engine.subscribe(() => {
             const state = engine.state;
             const query = state?.query?.q || "";
+            latestResults = state?.search?.results || [];
             setHasQuery(query.trim().length > 0);
+            void hydrateResultImages();
           });
         }
       } catch (error) {
