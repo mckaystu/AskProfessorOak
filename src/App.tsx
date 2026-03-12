@@ -83,7 +83,7 @@ function App() {
               <atomic-result-list display="grid" image-size="large">
                 <atomic-result-template>
                   <template>
-                    <div class="result-card">
+                    <div className="result-card">
                       <atomic-result-section-visual>
                         <atomic-result-image
                           field="pokemon_thumbnail"
