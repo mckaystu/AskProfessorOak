@@ -43,6 +43,29 @@ function App() {
     init();
   }, []);
 
+  useEffect(() => {
+    const host = resultTemplateRef.current;
+    if (!host || host.querySelector("template")) return;
+
+    const template = document.createElement("template");
+    template.innerHTML = `
+      <atomic-result-section-visual>
+        <atomic-result-image field="pokemon_thumbnail"></atomic-result-image>
+      </atomic-result-section-visual>
+      <atomic-result-section-title>
+        <atomic-result-link></atomic-result-link>
+      </atomic-result-section-title>
+      <atomic-result-section-excerpt>
+        <atomic-result-text field="excerpt"></atomic-result-text>
+      </atomic-result-section-excerpt>
+      <atomic-result-section-bottom-metadata>
+        <atomic-result-badge field="poketype"></atomic-result-badge>
+      </atomic-result-section-bottom-metadata>
+    `;
+
+    host.appendChild(template);
+  }, []);
+
   return (
     <div className="min-h-screen bg-gray-100 p-4">
       <header className="mb-8 text-center">
