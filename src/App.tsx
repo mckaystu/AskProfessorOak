@@ -14,14 +14,17 @@ function App() {
   const searchInterfaceRef = useRef<any>(null);
 
   useEffect(() => {
-    // Initialize the Coveo Search Interface once the component mounts
-    const searchInterface = searchInterfaceRef.current;
-    if (searchInterface) {
-      searchInterface.initialize({
+    const init = async () => {
+      const searchInterface = searchInterfaceRef.current;
+      if (!searchInterface) return;
+      // Wait for the custom element to be defined
+      await customElements.whenDefined("atomic-search-interface");
+      await searchInterface.initialize({
         accessToken: "YOUR_API_KEY",
         organizationId: "YOUR_ORG_ID",
       });
-    }
+    };
+    init();
   }, []);
 
   return (
