@@ -1,7 +1,7 @@
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import "./App.css";
 
-// 1. Tell TypeScript/React to ignore the custom Atomic tags
+// Tell TypeScript/React to ignore the custom Atomic tags
 declare global {
   namespace JSX {
     interface IntrinsicElements {
@@ -11,18 +11,16 @@ declare global {
 }
 
 function App() {
-  const searchInterfaceRef = useRef<any>(null);
-
   useEffect(() => {
     const init = async () => {
-      const searchInterface = searchInterfaceRef.current;
-      if (!searchInterface) return;
-      // Wait for the custom element to be defined
       await customElements.whenDefined("atomic-search-interface");
+      const searchInterface = document.querySelector("atomic-search-interface") as any;
+      if (!searchInterface) return;
       await searchInterface.initialize({
         accessToken: "xx4e0a0e64-3530-4114-b061-91e997542bec",
         organizationId: "pw6jnyqt56qcqeodapy2bii2ji4",
       });
+      searchInterface.executeFirstSearch();
     };
     init();
   }, []);
