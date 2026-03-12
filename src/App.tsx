@@ -24,14 +24,23 @@ function App() {
     return thumbMatch?.[1]?.toLowerCase() ?? "pokemon";
   };
 
+  const getPokemonId = (result: any) => {
+    const excerpt = String(result?.excerpt ?? "");
+    const idMatch = excerpt.match(/#\s*0*([0-9]{1,4})\b/);
+    return idMatch?.[1] ?? null;
+  };
+
+  const getSecondaryThumbnailUrl = (pokemonName: string) =>
+    `https://img.pokemondb.net/sprites/home/normal/${encodeURIComponent(pokemonName)}.png`;
+
   const getThumbnailUrl = (result: any) => {
-    const rawThumbnail = result?.raw?.pokemon_thumbnail;
-    if (typeof rawThumbnail === "string" && rawThumbnail.trim().length > 0) {
-      return rawThumbnail;
+    const pokemonId = getPokemonId(result);
+    if (pokemonId) {
+      return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokemonId}.png`;
     }
 
     const pokemonName = getPokemonName(result);
-    return `https://img.pokemondb.net/sprites/home/normal/${pokemonName}.png`;
+    return getSecondaryThumbnailUrl(pokemonName);
   };
 
   const getPokemonType = (result: any) => {
