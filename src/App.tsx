@@ -136,8 +136,17 @@ function App() {
                         className="h-40 w-40 shrink-0 object-contain"
                         onError={(event) => {
                           const target = event.currentTarget;
-                          if (target.src.endsWith("/placeholder.svg")) return;
-                          target.src = "/placeholder.svg";
+                          const secondaryUrl = getSecondaryThumbnailUrl(pokemonName);
+
+                          if (target.dataset.fallbackApplied !== "true") {
+                            target.dataset.fallbackApplied = "true";
+                            target.src = secondaryUrl;
+                            return;
+                          }
+
+                          if (!target.src.includes("/placeholder.svg")) {
+                            target.src = "/placeholder.svg";
+                          }
                         }}
                       />
 
