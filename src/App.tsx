@@ -46,18 +46,6 @@ function App() {
             <atomic-search-box></atomic-search-box>
           </atomic-layout-section>
 
-          {/* STATUS BAR */}
-          <atomic-layout-section section="status">
-            <div className="mb-4 flex items-center justify-between">
-              <atomic-query-summary></atomic-query-summary>
-              <atomic-sort-dropdown>
-                <atomic-sort-expression label="Relevance" expression="relevancy" />
-                <atomic-sort-expression label="Newest" expression="date descending" />
-              </atomic-sort-dropdown>
-            </div>
-            <atomic-breadbox></atomic-breadbox>
-          </atomic-layout-section>
-
           {/* FACETS */}
           <atomic-layout-section section="facets">
             <atomic-facet-manager>
@@ -76,41 +64,55 @@ function App() {
             </atomic-facet-manager>
           </atomic-layout-section>
 
-          {/* RESULTS PANEL */}
+          {/* MAIN CONTENT */}
           <atomic-layout-section section="main">
-            <atomic-result-list display="grid" image-size="large">
-              <atomic-result-template>
-                <template>
-                  <div className="p-4 border border-gray-200 rounded-lg bg-white hover:shadow-lg transition-shadow">
-                    <atomic-result-section-visual>
-                      <atomic-result-image
-                        field="pokemon_image_url"
-                        class="h-40 w-full object-contain"
-                      ></atomic-result-image>
-                    </atomic-result-section-visual>
+            {/* STATUS BAR */}
+            <atomic-layout-section section="status">
+              <div className="mb-4 flex items-center justify-between">
+                <atomic-query-summary></atomic-query-summary>
+                <atomic-sort-dropdown>
+                  <atomic-sort-expression label="Relevance" expression="relevancy" />
+                  <atomic-sort-expression label="Newest" expression="date descending" />
+                </atomic-sort-dropdown>
+              </div>
+              <atomic-breadbox></atomic-breadbox>
+            </atomic-layout-section>
 
-                    <atomic-result-section-title class="mt-4 font-bold text-xl capitalize">
-                      <atomic-result-link></atomic-result-link>
-                    </atomic-result-section-title>
+            {/* RESULTS PANEL */}
+            <atomic-layout-section section="results">
+              <atomic-result-list display="grid" image-size="large">
+                <atomic-result-template>
+                  <template>
+                    <div className="p-4 border border-gray-200 rounded-lg bg-white hover:shadow-lg transition-shadow">
+                      <atomic-result-section-visual>
+                        <atomic-result-image
+                          field="pokemon_image_url"
+                          class="h-40 w-full object-contain"
+                        ></atomic-result-image>
+                      </atomic-result-section-visual>
 
-                    <atomic-result-section-excerpt>
-                      <div className="text-sm text-gray-500 my-2">
-                        <atomic-result-text field="pokemongeneration"></atomic-result-text>
-                      </div>
-                      {/* THE COLOR CODED TYPES */}
-                      <atomic-result-badge field="poketype"></atomic-result-badge>
-                    </atomic-result-section-excerpt>
-                  </div>
-                </template>
-              </atomic-result-template>
-            </atomic-result-list>
+                      <atomic-result-section-title class="mt-4 font-bold text-xl capitalize">
+                        <atomic-result-link></atomic-result-link>
+                      </atomic-result-section-title>
 
-            <atomic-query-error></atomic-query-error>
-            <atomic-no-results></atomic-no-results>
-          </atomic-layout-section>
+                      <atomic-result-section-excerpt>
+                        <div className="text-sm text-gray-500 my-2">
+                          <atomic-result-text field="pokemongeneration"></atomic-result-text>
+                        </div>
+                        <atomic-result-badge field="poketype"></atomic-result-badge>
+                      </atomic-result-section-excerpt>
+                    </div>
+                  </template>
+                </atomic-result-template>
+              </atomic-result-list>
 
-          <atomic-layout-section section="pagination" class="py-8">
-            <atomic-pager></atomic-pager>
+              <atomic-query-error></atomic-query-error>
+              <atomic-no-results></atomic-no-results>
+            </atomic-layout-section>
+
+            <atomic-layout-section section="pagination" class="py-8">
+              <atomic-pager></atomic-pager>
+            </atomic-layout-section>
           </atomic-layout-section>
         </atomic-search-layout>
       </atomic-search-interface>
