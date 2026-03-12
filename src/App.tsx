@@ -13,8 +13,6 @@ declare global {
 function App() {
   const [hasQuery, setHasQuery] = useState(false);
   const [results, setResults] = useState<any[]>([]);
-  const [spriteUrls, setSpriteUrls] = useState<Record<string, string>>({});
-  const spriteCacheRef = useState(() => new Map<string, string>())[0];
 
   const getPokemonName = (result: any) => {
     const clickUri = result?.clickUri || result?.uri || "";
@@ -26,47 +24,21 @@ function App() {
     return thumbMatch?.[1]?.toLowerCase() ?? "pokemon";
   };
 
-  const toPokeApiSlug = (name: string) =>
-    name
-      .toLowerCase()
-      .trim()
-      .replace(/[’'`.]/g, "")
-      .replace(/♀/g, "-f")
-      .replace(/♂/g, "-m")
-      .replace(/é/g, "e")
-      .replace(/\s+/g, "-")
-      .replace(/:+/g, "")
-      .replace(/-+/g, "-");
-
   const getSecondaryThumbnailUrl = (pokemonName: string) =>
     `https://img.pokemondb.net/sprites/home/normal/${encodeURIComponent(pokemonName)}.png`;
 
-  const resolveSpriteUrl = async (result: any) => {
+  const toProxyImageUrl = (url: string) => {
+    if (!url) return "";
+    const withoutProtocol = url.replace(/^https?:\/\//i, "");
+    return `https://images.weserv.nl/?url=${encodeURIComponent(withoutProtocol)}&w=320&h=320&fit=contain`;
+  };
+
+  const getThumbnailUrl = (result: any) => {
+    const primary = result?.raw?.pokemon_thumbnail || "";
+    if (primary) return toProxyImageUrl(primary);
+
     const pokemonName = getPokemonName(result);
-    const cached = spriteCacheRef.get(pokemonName);
-    if (cached) return cached;
-
-    const slug = toPokeApiSlug(pokemonName);
-    try {
-      const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${encodeURIComponent(slug)}`);
-      if (response.ok) {
-        const data = await response.json();
-        const officialArtwork = data?.sprites?.other?.["official-artwork"]?.front_default;
-        const defaultSprite = data?.sprites?.front_default;
-        const resolved = officialArtwork || defaultSprite;
-
-        if (resolved) {
-          spriteCacheRef.set(pokemonName, resolved);
-          return resolved;
-        }
-      }
-    } catch {
-      // Ignore and fall through to controlled fallbacks.
-    }
-
-    const fallback = result?.raw?.pokemon_thumbnail || getSecondaryThumbnailUrl(pokemonName) || "/placeholder.svg";
-    spriteCacheRef.set(pokemonName, fallback);
-    return fallback;
+    return toProxyImageUrl(getSecondaryThumbnailUrl(pokemonName));
   };
 
   const getPokemonType = (result: any) => {
@@ -105,46 +77,6 @@ function App() {
 
     void init();
   }, []);
-
-  useEffect(() => {
-    if (!results.length) return;
-    let cancelled = false;
-
-    const loadSprites = async () => {
-      const entries = await Promise.all(
-        results.map(async (result) => {
-          const key = String(result?.uniqueId ?? "");
-          if (!key) return null;
-          const url = await resolveSpriteUrl(result);
-          return [key, url] as const;
-        })
-      );
-
-      if (cancelled) return;
-
-      setSpriteUrls((prev) => {
-        const next = { ...prev };
-        let changed = false;
-
-        for (const entry of entries) {
-          if (!entry) continue;
-          const [key, url] = entry;
-          if (next[key] !== url) {
-            next[key] = url;
-            changed = true;
-          }
-        }
-
-        return changed ? next : prev;
-      });
-    };
-
-    void loadSprites();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [results]);
   return (
     <div className="min-h-screen bg-gray-100 p-4">
       <header className="mb-8 text-center">
@@ -190,7 +122,7 @@ function App() {
                 {results.map((result) => {
                   const pokemonName = getPokemonName(result);
                   const pokemonType = getPokemonType(result);
-                  const spriteUrl = spriteUrls[result.uniqueId] || "/placeholder.svg";
+                  const spriteUrl = getThumbnailUrl(result) || "/placeholder.svg";
 
                   return (
                     <article key={result.uniqueId} className="result-card flex gap-4">
@@ -202,11 +134,11 @@ function App() {
                         className="h-40 w-40 shrink-0 object-contain"
                         onError={(event) => {
                           const target = event.currentTarget;
-                          const secondaryUrl = getSecondaryThumbnailUrl(pokemonName);
+                          const secondaryUrl = toProxyImageUrl(getSecondaryThumbnailUrl(pokemonName));
 
                           if (target.dataset.fallbackApplied !== "true") {
                             target.dataset.fallbackApplied = "true";
-                            target.src = secondaryUrl;
+                            target.src = secondaryUrl || "/placeholder.svg";
                             return;
                           }
 
