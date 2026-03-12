@@ -26,7 +26,6 @@ function App() {
           organizationId: "pw6jnyqt56qcqeodapy2bii2ji4",
         });
 
-        // Listen for query changes via the Headless engine
         const engine = searchInterface.engine;
         if (engine) {
           engine.subscribe(() => {
@@ -45,89 +44,78 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gray-100 p-4">
-      {/* HEADER */}
       <header className="mb-8 text-center">
         <h1 className="text-4xl font-bold text-red-600">Pokedex Search</h1>
       </header>
 
       <atomic-search-interface pipeline="default" search-hub="MainSearch" fields-to-include='["pokemon_thumbnail","pokemongeneration","poketype"]'>
         <atomic-search-layout>
-          {/* SEARCH BOX */}
           <atomic-layout-section section="search">
             <atomic-search-box></atomic-search-box>
           </atomic-layout-section>
 
-          {/* FACETS - only show when user has a query */}
-          {hasQuery && (
-            <atomic-layout-section section="facets">
-              <atomic-facet-manager>
-                <atomic-facet
-                  field="pokemongeneration"
-                  label="Generation"
-                  with-search="false"
-                  display-values-as="checkbox"
-                ></atomic-facet>
-                <atomic-facet
-                  field="poketype"
-                  label="Pokemon Type"
-                  with-search="false"
-                  display-values-as="checkbox"
-                ></atomic-facet>
-              </atomic-facet-manager>
+          <atomic-layout-section section="facets" class={hasQuery ? "" : "hidden-section"}>
+            <atomic-facet-manager>
+              <atomic-facet
+                field="pokemongeneration"
+                label="Generation"
+                with-search="false"
+                display-values-as="checkbox"
+              ></atomic-facet>
+              <atomic-facet
+                field="poketype"
+                label="Pokemon Type"
+                with-search="false"
+                display-values-as="checkbox"
+              ></atomic-facet>
+            </atomic-facet-manager>
+          </atomic-layout-section>
+
+          <atomic-layout-section section="main" class={hasQuery ? "" : "hidden-section"}>
+            <atomic-layout-section section="status">
+              <div className="mb-4 flex items-center justify-between">
+                <atomic-query-summary></atomic-query-summary>
+                <atomic-sort-dropdown>
+                  <atomic-sort-expression label="Relevance" expression="relevancy" />
+                  <atomic-sort-expression label="Newest" expression="date descending" />
+                </atomic-sort-dropdown>
+              </div>
+              <atomic-breadbox></atomic-breadbox>
             </atomic-layout-section>
-          )}
 
-          {/* MAIN CONTENT - only show when user has a query */}
-          {hasQuery && (
-            <atomic-layout-section section="main">
-              <atomic-layout-section section="status">
-                <div className="mb-4 flex items-center justify-between">
-                  <atomic-query-summary></atomic-query-summary>
-                  <atomic-sort-dropdown>
-                    <atomic-sort-expression label="Relevance" expression="relevancy" />
-                    <atomic-sort-expression label="Newest" expression="date descending" />
-                  </atomic-sort-dropdown>
-                </div>
-                <atomic-breadbox></atomic-breadbox>
-              </atomic-layout-section>
+            <atomic-layout-section section="results">
+              <atomic-result-list display="list" image-size="small">
+                <atomic-result-template>
+                  <template>
+                    <atomic-result-section-visual>
+                      <atomic-result-image
+                        field="pokemon_thumbnail"
+                      ></atomic-result-image>
+                    </atomic-result-section-visual>
 
-              <atomic-layout-section section="results">
-                <atomic-result-list display="grid" image-size="large">
-                  <atomic-result-template>
-                    <template>
-                      <div className="result-card">
-                        <atomic-result-section-visual>
-                          <atomic-result-image
-                            field="pokemon_thumbnail"
-                            class="pokemon-thumbnail"
-                          ></atomic-result-image>
-                        </atomic-result-section-visual>
+                    <atomic-result-section-title>
+                      <atomic-result-link></atomic-result-link>
+                    </atomic-result-section-title>
 
-                        <atomic-result-section-title>
-                          <atomic-result-link class="pokemon-name"></atomic-result-link>
-                        </atomic-result-section-title>
+                    <atomic-result-section-excerpt>
+                      <atomic-result-text field="excerpt"></atomic-result-text>
+                    </atomic-result-section-excerpt>
 
-                        <atomic-result-section-excerpt>
-                          <atomic-result-text field="excerpt" class="pokemon-description"></atomic-result-text>
-                        </atomic-result-section-excerpt>
+                    <atomic-result-section-bottom-metadata>
+                      <atomic-result-badge field="poketype"></atomic-result-badge>
+                    </atomic-result-section-bottom-metadata>
+                  </template>
+                </atomic-result-template>
+              </atomic-result-list>
 
-                        <atomic-result-section-bottom-metadata>
-                          <atomic-result-badge field="poketype"></atomic-result-badge>
-                        </atomic-result-section-bottom-metadata>
-                      </div>
-                    </template>
-                  </atomic-result-template>
-                </atomic-result-list>
-
-                <atomic-query-error></atomic-query-error>
-                <atomic-no-results></atomic-no-results>
-              </atomic-layout-section>
-
-              <atomic-layout-section section="pagination" class="py-8">
-                <atomic-pager></atomic-pager>
-              </atomic-layout-section>
+              <atomic-query-error></atomic-query-error>
+              <atomic-no-results></atomic-no-results>
             </atomic-layout-section>
-          )}
+
+            <atomic-layout-section section="pagination">
+              <atomic-pager></atomic-pager>
+            </atomic-layout-section>
+          </atomic-layout-section>
         </atomic-search-layout>
       </atomic-search-interface>
     </div>
