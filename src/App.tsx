@@ -13,32 +13,22 @@ declare global {
 function App() {
   useEffect(() => {
     const init = async () => {
-      console.log("Waiting for atomic-search-interface to be defined...");
-      const timeout = setTimeout(() => {
-        console.error("Coveo Atomic custom element never defined - script may have failed to load");
-      }, 10000);
-      
       await customElements.whenDefined("atomic-search-interface");
-      clearTimeout(timeout);
-      console.log("atomic-search-interface defined!");
-      
+
       const searchInterface = document.querySelector("atomic-search-interface") as any;
-      if (!searchInterface) {
-        console.error("atomic-search-interface element not found in DOM");
-        return;
-      }
-      
+      if (!searchInterface) return;
+
       try {
         await searchInterface.initialize({
           accessToken: "xx4e0a0e64-3530-4114-b061-91e997542bec",
           organizationId: "pw6jnyqt56qcqeodapy2bii2ji4",
         });
-        console.log("Coveo initialized successfully");
         searchInterface.executeFirstSearch();
-      } catch (err) {
-        console.error("Coveo initialization failed:", err);
+      } catch (error) {
+        console.error("Failed to initialize Coveo Atomic:", error);
       }
     };
+
     init();
   }, []);
 
