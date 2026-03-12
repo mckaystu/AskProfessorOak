@@ -147,7 +147,6 @@ function App() {
           engine.subscribe(() => {
             const state = engine.state;
             const query = state?.query?.q || "";
-            latestResults = state?.search?.results || [];
             setHasQuery(query.trim().length > 0);
             scheduleHydrateResultImages();
           });
