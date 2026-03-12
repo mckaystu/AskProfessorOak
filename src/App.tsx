@@ -134,11 +134,11 @@ function App() {
                         className="h-40 w-40 shrink-0 object-contain"
                         onError={(event) => {
                           const target = event.currentTarget;
-                          const secondaryUrl = getSecondaryThumbnailUrl(pokemonName);
+                          const secondaryUrl = toProxyImageUrl(getSecondaryThumbnailUrl(pokemonName));
 
                           if (target.dataset.fallbackApplied !== "true") {
                             target.dataset.fallbackApplied = "true";
-                            target.src = secondaryUrl;
+                            target.src = secondaryUrl || "/placeholder.svg";
                             return;
                           }
 
