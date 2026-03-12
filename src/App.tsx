@@ -24,21 +24,8 @@ function App() {
     return thumbMatch?.[1]?.toLowerCase() ?? "pokemon";
   };
 
-  const getSecondaryThumbnailUrl = (pokemonName: string) =>
-    `https://img.pokemondb.net/sprites/home/normal/${encodeURIComponent(pokemonName)}.png`;
-
-  const toProxyImageUrl = (url: string) => {
-    if (!url) return "";
-    const withoutProtocol = url.replace(/^https?:\/\//i, "");
-    return `https://images.weserv.nl/?url=${encodeURIComponent(withoutProtocol)}&w=320&h=320&fit=contain`;
-  };
-
   const getThumbnailUrl = (result: any) => {
-    const primary = result?.raw?.pokemon_thumbnail || "";
-    if (primary) return toProxyImageUrl(primary);
-
-    const pokemonName = getPokemonName(result);
-    return toProxyImageUrl(getSecondaryThumbnailUrl(pokemonName));
+    return result?.raw?.pokemon_thumbnail || "/placeholder.svg";
   };
 
   const getPokemonType = (result: any) => {
@@ -134,14 +121,6 @@ function App() {
                         className="h-40 w-40 shrink-0 object-contain"
                         onError={(event) => {
                           const target = event.currentTarget;
-                          const secondaryUrl = toProxyImageUrl(getSecondaryThumbnailUrl(pokemonName));
-
-                          if (target.dataset.fallbackApplied !== "true") {
-                            target.dataset.fallbackApplied = "true";
-                            target.src = secondaryUrl || "/placeholder.svg";
-                            return;
-                          }
-
                           if (!target.src.includes("/placeholder.svg")) {
                             target.src = "/placeholder.svg";
                           }
