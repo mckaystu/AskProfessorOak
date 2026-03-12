@@ -81,8 +81,10 @@ function App() {
 
     const hydrateResultImages = async () => {
       const imageElements = Array.from(
-        document.querySelectorAll<HTMLImageElement>("#atomic-results-container img[data-pokemon-image='true']")
+        document.querySelectorAll<HTMLImageElement>("#atomic-results-container img.pokemon-thumbnail")
       );
+
+      if (!imageElements.length || !latestResults.length) return;
 
       await Promise.all(
         imageElements.map(async (img, index) => {
@@ -105,6 +107,15 @@ function App() {
       );
     };
 
+    const scheduleHydrateResultImages = () => {
+      requestAnimationFrame(() => {
+        void hydrateResultImages();
+        window.setTimeout(() => {
+          void hydrateResultImages();
+        }, 120);
+      });
+    };
+
     const init = async () => {
       await customElements.whenDefined("atomic-search-interface");
 
@@ -120,7 +131,7 @@ function App() {
         const engine = searchInterface.engine;
         if (engine) {
           const observer = new MutationObserver(() => {
-            void hydrateResultImages();
+            scheduleHydrateResultImages();
           });
 
           if (resultsContainer) {
@@ -132,7 +143,7 @@ function App() {
             const query = state?.query?.q || "";
             latestResults = state?.search?.results || [];
             setHasQuery(query.trim().length > 0);
-            void hydrateResultImages();
+            scheduleHydrateResultImages();
           });
         }
       } catch (error) {
