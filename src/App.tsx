@@ -106,7 +106,7 @@ function App() {
 
             <atomic-layout-section section="results">
               <atomic-result-list display="list" image-size="small">
-                <atomic-result-template ref={resultTemplateRef}></atomic-result-template>
+                <atomic-result-template></atomic-result-template>
               </atomic-result-list>
 
               <atomic-query-error></atomic-query-error>
