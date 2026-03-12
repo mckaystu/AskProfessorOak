@@ -40,3 +40,26 @@
 .read-the-docs {
   color: #888;
 }
+
+/* Type Color Coding */
+atomic-result-badge[field="poketype"]::part(badge-root) {
+  text-transform: uppercase;
+  font-weight: bold;
+  color: white;
+  border: none;
+  padding: 4px 8px;
+}
+
+/* Dynamic Colors */
+atomic-result-badge[field="poketype"][value="Grass"]::part(badge-root) { background-color: #78C850; }
+atomic-result-badge[field="poketype"][value="Fire"]::part(badge-root) { background-color: #F08030; }
+atomic-result-badge[field="poketype"][value="Water"]::part(badge-root) { background-color: #6890F0; }
+atomic-result-badge[field="poketype"][value="Psychic"]::part(badge-root) { background-color: #F85888; }
+atomic-result-badge[field="poketype"][value="Poison"]::part(badge-root) { background-color: #A040A0; }
+atomic-result-badge[field="poketype"][value="Electric"]::part(badge-root) { background-color: #F8D030; color: black; }
+atomic-result-badge[field="poketype"][value="Bug"]::part(badge-root) { background-color: #A8B820; }
+
+/* Grid specific styling */
+atomic-result-list::part(result-list-grid-clickable) {
+  gap: 20px;
+}
