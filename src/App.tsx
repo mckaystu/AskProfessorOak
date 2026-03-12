@@ -22,7 +22,13 @@ function App() {
           <atomic-result-template>
             <template>
               <atomic-result-section-visual>
-                <atomic-result-image field="pokemon_thumbnail"></atomic-result-image>
+                <img
+                  class="pokemon-thumbnail"
+                  src="{{raw.pokemon_thumbnail}}"
+                  alt="Pokemon thumbnail"
+                  loading="lazy"
+                  onerror="this.onerror=null;this.src='/placeholder.svg';"
+                />
               </atomic-result-section-visual>
               <atomic-result-section-title>
                 <atomic-result-link></atomic-result-link>
