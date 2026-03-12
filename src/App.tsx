@@ -21,7 +21,7 @@ function App() {
       await customElements.whenDefined("atomic-search-interface");
       await searchInterface.initialize({
         accessToken: "xx4e0a0e64-3530-4114-b061-91e997542bec",
-        organizationId: "YOUR_ORG_ID",
+        organizationId: "pw6jnyqt56qcqeodapy2bii2ji4",
       });
     };
     init();
