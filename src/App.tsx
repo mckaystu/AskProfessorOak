@@ -145,7 +145,7 @@ function App() {
       cancelled = true;
     };
   }, [results]);
-}
+  return (
     <div className="min-h-screen bg-gray-100 p-4">
       <header className="mb-8 text-center">
         <h1 className="text-4xl font-bold text-red-600">Pokedex Search</h1>
@@ -190,11 +190,12 @@ function App() {
                 {results.map((result) => {
                   const pokemonName = getPokemonName(result);
                   const pokemonType = getPokemonType(result);
+                  const spriteUrl = spriteUrls[result.uniqueId] || "/placeholder.svg";
 
                   return (
                     <article key={result.uniqueId} className="result-card flex gap-4">
                       <img
-                        src={getThumbnailUrl(result)}
+                        src={spriteUrl}
                         alt={`${pokemonName} thumbnail`}
                         loading="lazy"
                         referrerPolicy="no-referrer"
