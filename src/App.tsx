@@ -12,116 +12,36 @@ declare global {
 
 function App() {
   const [hasQuery, setHasQuery] = useState(false);
+  const [results, setResults] = useState<any[]>([]);
 
-  useEffect(() => {
-    // Inject the result list with template via DOM BEFORE Coveo initializes
-    const resultsContainer = document.getElementById("atomic-results-container");
-    if (resultsContainer && !resultsContainer.querySelector("atomic-result-list")) {
-      resultsContainer.innerHTML = `
-        <atomic-result-list display="list" image-size="small">
-          <atomic-result-template>
-            <template>
-              <atomic-result-section-visual>
-                <img
-                  class="pokemon-thumbnail"
-                  src="/placeholder.svg"
-                  alt="Pokemon thumbnail"
-                  loading="lazy"
-                  data-pokemon-image="true"
-                />
-              </atomic-result-section-visual>
-              <atomic-result-section-title>
-                <atomic-result-link></atomic-result-link>
-              </atomic-result-section-title>
-              <atomic-result-section-excerpt>
-                <atomic-result-text field="excerpt"></atomic-result-text>
-              </atomic-result-section-excerpt>
-              <atomic-result-section-bottom-metadata>
-                <atomic-result-badge field="poketype"></atomic-result-badge>
-              </atomic-result-section-bottom-metadata>
-            </template>
-          </atomic-result-template>
-        </atomic-result-list>
-        <atomic-query-error></atomic-query-error>
-        <atomic-no-results></atomic-no-results>
-      `;
+  const getPokemonName = (result: any) => {
+    const clickUri = result?.clickUri || result?.uri || "";
+    const uriMatch = clickUri.match(/\/pokedex\/([^/?#]+)/i);
+    if (uriMatch?.[1]) return uriMatch[1].toLowerCase();
+
+    const thumbnailUrl = result?.raw?.pokemon_thumbnail || "";
+    const thumbMatch = thumbnailUrl.match(/\/([^/]+)\.(?:png|jpg|jpeg|webp)$/i);
+    return thumbMatch?.[1]?.toLowerCase() ?? "pokemon";
+  };
+
+  const getThumbnailUrl = (result: any) => {
+    const rawThumbnail = result?.raw?.pokemon_thumbnail;
+    if (typeof rawThumbnail === "string" && rawThumbnail.trim().length > 0) {
+      return rawThumbnail;
     }
 
-    const spriteCache = new Map<string, string>();
+    const pokemonName = getPokemonName(result);
+    return `https://img.pokemondb.net/sprites/home/normal/${pokemonName}.png`;
+  };
 
-    const getPokemonNameFromCard = (card: Element) => {
-      const link = card.querySelector<HTMLAnchorElement>("a[href*='/pokedex/']");
-      const href = link?.getAttribute("href") || "";
-      const hrefMatch = href.match(/\/pokedex\/([^/?#]+)/i);
-      if (hrefMatch?.[1]) return hrefMatch[1].toLowerCase();
+  const getPokemonType = (result: any) => {
+    const type = result?.raw?.poketype;
+    if (Array.isArray(type) && type.length > 0) return String(type[0]);
+    if (typeof type === "string") return type;
+    return "";
+  };
 
-      const headingText = (link?.textContent || card.textContent || "").trim();
-      const textMatch = headingText.match(/^([A-Za-z0-9-]+)/);
-      return textMatch?.[1]?.toLowerCase() ?? null;
-    };
-
-    const fetchSpriteUrl = async (name: string) => {
-      const cached = spriteCache.get(name);
-      if (cached) return cached;
-
-      try {
-        const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${encodeURIComponent(name)}`);
-        if (!response.ok) throw new Error("Failed to fetch sprite");
-
-        const data = await response.json();
-        const spriteUrl =
-          data?.sprites?.other?.["official-artwork"]?.front_default ||
-          data?.sprites?.other?.home?.front_default ||
-          data?.sprites?.front_default ||
-          "/placeholder.svg";
-
-        spriteCache.set(name, spriteUrl);
-        return spriteUrl;
-      } catch {
-        spriteCache.set(name, "/placeholder.svg");
-        return "/placeholder.svg";
-      }
-    };
-
-    const hydrateResultImages = async () => {
-      const resultList = document.querySelector("atomic-result-list") as HTMLElement & {
-        shadowRoot?: ShadowRoot | null;
-      };
-      const queryRoot = resultList?.shadowRoot ?? resultList;
-      if (!queryRoot) return;
-
-      const resultCards = Array.from(queryRoot.querySelectorAll("atomic-result"));
-      if (!resultCards.length) return;
-
-      await Promise.all(
-        resultCards.map(async (card) => {
-          const img = card.querySelector<HTMLImageElement>("img.pokemon-thumbnail");
-          if (!img) return;
-
-          const pokemonName = getPokemonNameFromCard(card);
-          if (!pokemonName) {
-            img.src = "/placeholder.svg";
-            return;
-          }
-
-          if (img.dataset.resultKey === pokemonName) return;
-
-          img.dataset.resultKey = pokemonName;
-          img.alt = `${pokemonName} thumbnail`;
-          img.src = await fetchSpriteUrl(pokemonName);
-        })
-      );
-    };
-
-    const scheduleHydrateResultImages = () => {
-      requestAnimationFrame(() => {
-        void hydrateResultImages();
-        window.setTimeout(() => {
-          void hydrateResultImages();
-        }, 120);
-      });
-    };
-
+  useEffect(() => {
     const init = async () => {
       await customElements.whenDefined("atomic-search-interface");
 
@@ -136,19 +56,11 @@ function App() {
 
         const engine = searchInterface.engine;
         if (engine) {
-          const observer = new MutationObserver(() => {
-            scheduleHydrateResultImages();
-          });
-
-          if (resultsContainer) {
-            observer.observe(resultsContainer, { childList: true, subtree: true });
-          }
-
           engine.subscribe(() => {
             const state = engine.state;
             const query = state?.query?.q || "";
             setHasQuery(query.trim().length > 0);
-            scheduleHydrateResultImages();
+            setResults(state?.search?.results || []);
           });
         }
       } catch (error) {
@@ -156,7 +68,7 @@ function App() {
       }
     };
 
-    init();
+    void init();
   }, []);
 
   return (
@@ -165,7 +77,11 @@ function App() {
         <h1 className="text-4xl font-bold text-red-600">Pokedex Search</h1>
       </header>
 
-      <atomic-search-interface pipeline="default" search-hub="MainSearch" fields-to-include='["pokemon_thumbnail","pokemongeneration","poketype"]'>
+      <atomic-search-interface
+        pipeline="default"
+        search-hub="MainSearch"
+        fields-to-include='["pokemon_thumbnail","pokemongeneration","poketype"]'
+      >
         <atomic-search-layout>
           <atomic-layout-section section="search">
             <atomic-search-box></atomic-search-box>
@@ -179,12 +95,7 @@ function App() {
                 with-search="false"
                 display-values-as="checkbox"
               ></atomic-facet>
-              <atomic-facet
-                field="poketype"
-                label="Pokemon Type"
-                with-search="false"
-                display-values-as="checkbox"
-              ></atomic-facet>
+              <atomic-facet field="poketype" label="Pokemon Type" with-search="false" display-values-as="checkbox"></atomic-facet>
             </atomic-facet-manager>
           </atomic-layout-section>
 
@@ -201,7 +112,40 @@ function App() {
             </atomic-layout-section>
 
             <atomic-layout-section section="results">
-              <div id="atomic-results-container"></div>
+              <div className="space-y-4">
+                {results.map((result) => {
+                  const pokemonName = getPokemonName(result);
+                  const pokemonType = getPokemonType(result);
+
+                  return (
+                    <article key={result.uniqueId} className="result-card flex gap-4">
+                      <img
+                        src={getThumbnailUrl(result)}
+                        alt={`${pokemonName} thumbnail`}
+                        loading="lazy"
+                        referrerPolicy="no-referrer"
+                        className="h-40 w-40 shrink-0 object-contain"
+                        onError={(event) => {
+                          const target = event.currentTarget;
+                          if (target.src.endsWith("/placeholder.svg")) return;
+                          target.src = "/placeholder.svg";
+                        }}
+                      />
+
+                      <div className="min-w-0">
+                        <a href={result.clickUri} target="_blank" rel="noreferrer" className="pokemon-name block hover:underline">
+                          {result.title}
+                        </a>
+                        <p className="pokemon-description">{result.excerpt}</p>
+                        {pokemonType ? <p className="mt-2 text-sm font-semibold text-gray-600">{pokemonType}</p> : null}
+                      </div>
+                    </article>
+                  );
+                })}
+
+                {results.length === 0 ? <atomic-no-results></atomic-no-results> : null}
+                <atomic-query-error></atomic-query-error>
+              </div>
             </atomic-layout-section>
 
             <atomic-layout-section section="pagination">
@@ -215,3 +159,4 @@ function App() {
 }
 
 export default App;
+
