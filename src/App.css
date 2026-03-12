@@ -4,6 +4,29 @@
   padding: 0;
 }
 
+/* Ensure Atomic layout takes full width */
+atomic-search-interface {
+  display: block;
+  width: 100%;
+}
+
+atomic-search-layout {
+  display: block;
+  width: 100%;
+}
+
+atomic-layout-section {
+  display: block;
+}
+
+atomic-layout-section[section="main"] {
+  width: 100%;
+}
+
+atomic-layout-section[section="status"] {
+  width: 100%;
+}
+
 atomic-facet[field="poketype"]::part(value-count) {
   display: none;
 }
