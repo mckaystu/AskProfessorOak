@@ -34,11 +34,11 @@ function App() {
     `https://img.pokemondb.net/sprites/home/normal/${encodeURIComponent(pokemonName)}.png`;
 
   const getThumbnailUrl = (result: any) => {
-    const pokemonId = getPokemonId(result);
-    if (pokemonId) {
-      return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokemonId}.png`;
-    }
+    // Primary: use the per-result pokemon_thumbnail field (unique per pokemon)
+    const thumbnail = result?.raw?.pokemon_thumbnail;
+    if (thumbnail) return thumbnail;
 
+    // Fallback: build URL from pokemon name extracted from clickUri
     const pokemonName = getPokemonName(result);
     return getSecondaryThumbnailUrl(pokemonName);
   };
