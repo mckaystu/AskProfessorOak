@@ -80,13 +80,13 @@ function App() {
     };
 
     const hydrateResultImages = async () => {
-      const imageElements = Array.from(
-        document.querySelectorAll<HTMLImageElement>("#atomic-results-container img.pokemon-thumbnail")
-      );
-
-      if (!imageElements.length || !latestResults.length) return;
-
-      await Promise.all(
+      const resultList = document.querySelector("atomic-result-list") as HTMLElement & {
+        shadowRoot?: ShadowRoot | null;
+      };
+      const queryRoot = resultList?.shadowRoot ?? resultList;
+      const imageElements = queryRoot
+        ? Array.from(queryRoot.querySelectorAll<HTMLImageElement>("img.pokemon-thumbnail"))
+        : [];
         imageElements.map(async (img, index) => {
           const result = latestResults[index];
           if (!result) return;
