@@ -66,3 +66,34 @@ atomic-result-badge[field="poketype"][value="Stellar"]::part(badge-root) { backg
 atomic-result-list::part(result-list-grid-clickable) {
   gap: 20px;
 }
+
+/* Result card styling */
+.result-card {
+  padding: 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  background: white;
+  transition: box-shadow 0.2s;
+}
+
+.result-card:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.pokemon-thumbnail {
+  height: 160px;
+  width: 100%;
+  object-fit: contain;
+}
+
+.pokemon-name {
+  font-weight: bold;
+  font-size: 1.15rem;
+  text-transform: capitalize;
+}
+
+.pokemon-description {
+  font-size: 0.85rem;
+  color: #6b7280;
+  margin-top: 4px;
+}
