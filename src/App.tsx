@@ -50,7 +50,7 @@ function App() {
     const template = document.createElement("template");
     template.innerHTML = `
       <atomic-result-section-visual>
-        <atomic-result-image field="pokemon_thumbnail"></atomic-result-image>
+        <img loading="lazy" src="\${raw.pokemon_thumbnail}" style="max-height:160px;width:100%;object-fit:contain;" />
       </atomic-result-section-visual>
       <atomic-result-section-title>
         <atomic-result-link></atomic-result-link>
