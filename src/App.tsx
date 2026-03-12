@@ -46,61 +46,68 @@ function App() {
             <atomic-search-box></atomic-search-box>
           </atomic-layout-section>
 
-          {/* SIDEBAR & MAIN CONTENT */}
-          <div className="flex flex-col md:flex-row gap-8 mt-6">
-            {/* FACETS (SIDEBAR) */}
-            <aside className="w-full md:w-64 space-y-4">
-              <atomic-facet-manager>
-                <atomic-facet field="pokemongeneration" label="Generation" display-values-as="checkbox"></atomic-facet>
-                <atomic-facet field="poketype" label="Pokemon Type" display-values-as="link"></atomic-facet>
-              </atomic-facet-manager>
-            </aside>
+          {/* STATUS BAR */}
+          <atomic-layout-section section="status">
+            <div className="mb-4 flex items-center justify-between">
+              <atomic-query-summary></atomic-query-summary>
+              <atomic-sort-dropdown>
+                <atomic-sort-expression label="Relevance" expression="relevancy" />
+                <atomic-sort-expression label="Newest" expression="date descending" />
+              </atomic-sort-dropdown>
+            </div>
+            <atomic-breadbox></atomic-breadbox>
+          </atomic-layout-section>
 
-            {/* RESULTS PANEL */}
-            <main className="flex-1">
-              <atomic-layout-section section="status">
-                <div className="flex justify-between items-center mb-4">
-                  <atomic-query-summary></atomic-query-summary>
-                  <atomic-sort-dropdown>
-                    <atomic-sort-expression label="Relevance" expression="relevancy" />
-                    <atomic-sort-expression label="Newest" expression="date descending" />
-                  </atomic-sort-dropdown>
-                </div>
-                <atomic-breadbox></atomic-breadbox>
-              </atomic-layout-section>
+          {/* FACETS */}
+          <atomic-layout-section section="facets">
+            <atomic-facet-manager>
+              <atomic-facet
+                field="pokemongeneration"
+                label="Generation"
+                with-search="false"
+                display-values-as="checkbox"
+              ></atomic-facet>
+              <atomic-facet
+                field="poketype"
+                label="Pokemon Type"
+                with-search="false"
+                display-values-as="link"
+              ></atomic-facet>
+            </atomic-facet-manager>
+          </atomic-layout-section>
 
-              {/* GRID OF POKEMON */}
-              <atomic-result-list display="grid" image-size="large">
-                <atomic-result-template>
-                  <template>
-                    <div className="p-4 border border-gray-200 rounded-lg bg-white hover:shadow-lg transition-shadow">
-                      <atomic-result-section-visual>
-                        <atomic-result-image
-                          field="pokemon_image_url"
-                          class="h-40 w-full object-contain"
-                        ></atomic-result-image>
-                      </atomic-result-section-visual>
+          {/* RESULTS PANEL */}
+          <atomic-layout-section section="main">
+            <atomic-result-list display="grid" image-size="large">
+              <atomic-result-template>
+                <template>
+                  <div className="p-4 border border-gray-200 rounded-lg bg-white hover:shadow-lg transition-shadow">
+                    <atomic-result-section-visual>
+                      <atomic-result-image
+                        field="pokemon_image_url"
+                        class="h-40 w-full object-contain"
+                      ></atomic-result-image>
+                    </atomic-result-section-visual>
 
-                      <atomic-result-section-title class="mt-4 font-bold text-xl capitalize">
-                        <atomic-result-link></atomic-result-link>
-                      </atomic-result-section-title>
+                    <atomic-result-section-title class="mt-4 font-bold text-xl capitalize">
+                      <atomic-result-link></atomic-result-link>
+                    </atomic-result-section-title>
 
-                      <atomic-result-section-excerpt>
-                        <div className="text-sm text-gray-500 my-2">
-                          <atomic-result-text field="pokemongeneration"></atomic-result-text>
-                        </div>
-                        {/* THE COLOR CODED TYPES */}
-                        <atomic-result-badge field="poketype"></atomic-result-badge>
-                      </atomic-result-section-excerpt>
-                    </div>
-                  </template>
-                </atomic-result-template>
-              </atomic-result-list>
+                    <atomic-result-section-excerpt>
+                      <div className="text-sm text-gray-500 my-2">
+                        <atomic-result-text field="pokemongeneration"></atomic-result-text>
+                      </div>
+                      {/* THE COLOR CODED TYPES */}
+                      <atomic-result-badge field="poketype"></atomic-result-badge>
+                    </atomic-result-section-excerpt>
+                  </div>
+                </template>
+              </atomic-result-template>
+            </atomic-result-list>
 
-              <atomic-query-error></atomic-query-error>
-              <atomic-no-results></atomic-no-results>
-            </main>
-          </div>
+            <atomic-query-error></atomic-query-error>
+            <atomic-no-results></atomic-no-results>
+          </atomic-layout-section>
 
           <atomic-layout-section section="pagination" class="py-8">
             <atomic-pager></atomic-pager>
