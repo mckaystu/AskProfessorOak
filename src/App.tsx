@@ -24,10 +24,10 @@ function App() {
               <atomic-result-section-visual>
                 <img
                   class="pokemon-thumbnail"
-                  src="{{raw.pokemon_thumbnail}}"
+                  src="/placeholder.svg"
                   alt="Pokemon thumbnail"
                   loading="lazy"
-                  onerror="this.onerror=null;this.src='/placeholder.svg';"
+                  data-pokemon-image="true"
                 />
               </atomic-result-section-visual>
               <atomic-result-section-title>
@@ -47,6 +47,81 @@ function App() {
       `;
     }
 
+    const spriteCache = new Map<string, string>();
+
+    const getPokemonNameFromCard = (card: Element) => {
+      const link = card.querySelector<HTMLAnchorElement>("a[href*='/pokedex/']");
+      const href = link?.getAttribute("href") || "";
+      const hrefMatch = href.match(/\/pokedex\/([^/?#]+)/i);
+      if (hrefMatch?.[1]) return hrefMatch[1].toLowerCase();
+
+      const headingText = (link?.textContent || card.textContent || "").trim();
+      const textMatch = headingText.match(/^([A-Za-z0-9-]+)/);
+      return textMatch?.[1]?.toLowerCase() ?? null;
+    };
+
+    const fetchSpriteUrl = async (name: string) => {
+      const cached = spriteCache.get(name);
+      if (cached) return cached;
+
+      try {
+        const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${encodeURIComponent(name)}`);
+        if (!response.ok) throw new Error("Failed to fetch sprite");
+
+        const data = await response.json();
+        const spriteUrl =
+          data?.sprites?.other?.["official-artwork"]?.front_default ||
+          data?.sprites?.other?.home?.front_default ||
+          data?.sprites?.front_default ||
+          "/placeholder.svg";
+
+        spriteCache.set(name, spriteUrl);
+        return spriteUrl;
+      } catch {
+        spriteCache.set(name, "/placeholder.svg");
+        return "/placeholder.svg";
+      }
+    };
+
+    const hydrateResultImages = async () => {
+      const resultList = document.querySelector("atomic-result-list") as HTMLElement & {
+        shadowRoot?: ShadowRoot | null;
+      };
+      const queryRoot = resultList?.shadowRoot ?? resultList;
+      if (!queryRoot) return;
+
+      const resultCards = Array.from(queryRoot.querySelectorAll("atomic-result"));
+      if (!resultCards.length) return;
+
+      await Promise.all(
+        resultCards.map(async (card) => {
+          const img = card.querySelector<HTMLImageElement>("img.pokemon-thumbnail");
+          if (!img) return;
+
+          const pokemonName = getPokemonNameFromCard(card);
+          if (!pokemonName) {
+            img.src = "/placeholder.svg";
+            return;
+          }
+
+          if (img.dataset.resultKey === pokemonName) return;
+
+          img.dataset.resultKey = pokemonName;
+          img.alt = `${pokemonName} thumbnail`;
+          img.src = await fetchSpriteUrl(pokemonName);
+        })
+      );
+    };
+
+    const scheduleHydrateResultImages = () => {
+      requestAnimationFrame(() => {
+        void hydrateResultImages();
+        window.setTimeout(() => {
+          void hydrateResultImages();
+        }, 120);
+      });
+    };
+
     const init = async () => {
       await customElements.whenDefined("atomic-search-interface");
 
@@ -61,10 +136,19 @@ function App() {
 
         const engine = searchInterface.engine;
         if (engine) {
+          const observer = new MutationObserver(() => {
+            scheduleHydrateResultImages();
+          });
+
+          if (resultsContainer) {
+            observer.observe(resultsContainer, { childList: true, subtree: true });
+          }
+
           engine.subscribe(() => {
             const state = engine.state;
             const query = state?.query?.q || "";
             setHasQuery(query.trim().length > 0);
+            scheduleHydrateResultImages();
           });
         }
       } catch (error) {
