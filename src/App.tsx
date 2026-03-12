@@ -39,7 +39,7 @@ function App() {
         <h1 className="text-4xl font-bold text-red-600">Pokedex Search</h1>
       </header>
 
-      <atomic-search-interface pipeline="default" search-hub="MainSearch">
+      <atomic-search-interface pipeline="default" search-hub="MainSearch" fields-to-include='["pokemon_thumbnail","pokemongeneration","poketype"]'>
         <atomic-search-layout>
           {/* SEARCH BOX */}
           <atomic-layout-section section="search">
@@ -83,24 +83,25 @@ function App() {
               <atomic-result-list display="grid" image-size="large">
                 <atomic-result-template>
                   <template>
-                    <div className="p-4 border border-gray-200 rounded-lg bg-white hover:shadow-lg transition-shadow">
+                    <div className="result-card">
                       <atomic-result-section-visual>
                         <atomic-result-image
-                          field="pokemon_image_url"
-                          class="h-40 w-full object-contain"
+                          field="pokemon_thumbnail"
+                          class="pokemon-thumbnail"
                         ></atomic-result-image>
                       </atomic-result-section-visual>
 
-                      <atomic-result-section-title class="mt-4 font-bold text-xl capitalize">
-                        <atomic-result-link></atomic-result-link>
+                      <atomic-result-section-title>
+                        <atomic-result-link class="pokemon-name"></atomic-result-link>
                       </atomic-result-section-title>
 
                       <atomic-result-section-excerpt>
-                        <div className="text-sm text-gray-500 my-2">
-                          <atomic-result-text field="pokemongeneration"></atomic-result-text>
-                        </div>
-                        <atomic-result-badge field="poketype"></atomic-result-badge>
+                        <atomic-result-text field="excerpt" class="pokemon-description"></atomic-result-text>
                       </atomic-result-section-excerpt>
+
+                      <atomic-result-section-bottom-metadata>
+                        <atomic-result-badge field="poketype"></atomic-result-badge>
+                      </atomic-result-section-bottom-metadata>
                     </div>
                   </template>
                 </atomic-result-template>
