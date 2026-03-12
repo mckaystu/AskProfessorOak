@@ -48,12 +48,16 @@ function App() {
     }
 
     const spriteCache = new Map<string, string>();
-    let latestResults: any[] = [];
 
-    const getPokemonName = (result: any) => {
-      const clickUri = result?.clickUri || result?.uri || "";
-      const match = clickUri.match(/\/pokedex\/([^/?#]+)/i);
-      return match?.[1]?.toLowerCase() ?? null;
+    const getPokemonNameFromCard = (card: Element) => {
+      const link = card.querySelector<HTMLAnchorElement>("a[href*='/pokedex/']");
+      const href = link?.getAttribute("href") || "";
+      const hrefMatch = href.match(/\/pokedex\/([^/?#]+)/i);
+      if (hrefMatch?.[1]) return hrefMatch[1].toLowerCase();
+
+      const headingText = (link?.textContent || card.textContent || "").trim();
+      const textMatch = headingText.match(/^([A-Za-z0-9-]+)/);
+      return textMatch?.[1]?.toLowerCase() ?? null;
     };
 
     const fetchSpriteUrl = async (name: string) => {
@@ -84,27 +88,25 @@ function App() {
         shadowRoot?: ShadowRoot | null;
       };
       const queryRoot = resultList?.shadowRoot ?? resultList;
-      const imageElements = queryRoot
-        ? Array.from(queryRoot.querySelectorAll<HTMLImageElement>("img.pokemon-thumbnail"))
-        : [];
+      if (!queryRoot) return;
 
-      if (!imageElements.length || !latestResults.length) return;
+      const resultCards = Array.from(queryRoot.querySelectorAll("atomic-result"));
+      if (!resultCards.length) return;
 
       await Promise.all(
-        imageElements.map(async (img, index) => {
-          const result = latestResults[index];
-          if (!result) return;
+        resultCards.map(async (card) => {
+          const img = card.querySelector<HTMLImageElement>("img.pokemon-thumbnail");
+          if (!img) return;
 
-          const pokemonName = getPokemonName(result);
+          const pokemonName = getPokemonNameFromCard(card);
           if (!pokemonName) {
             img.src = "/placeholder.svg";
             return;
           }
 
-          const resultKey = result.uniqueId || pokemonName;
-          if (img.dataset.resultKey === resultKey) return;
+          if (img.dataset.resultKey === pokemonName) return;
 
-          img.dataset.resultKey = resultKey;
+          img.dataset.resultKey = pokemonName;
           img.alt = `${pokemonName} thumbnail`;
           img.src = await fetchSpriteUrl(pokemonName);
         })
