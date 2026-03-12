@@ -12,6 +12,7 @@ declare global {
 
 function App() {
   const [hasQuery, setHasQuery] = useState(false);
+  const resultTemplateRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
     const init = async () => {
