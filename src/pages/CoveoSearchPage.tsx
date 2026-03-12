@@ -1,12 +1,28 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 const CoveoSearchPage = () => {
+  const searchInterfaceRef = useRef<HTMLElement | null>(null);
+
   useEffect(() => {
-    // Initialize Coveo Atomic if needed
+    // Load Coveo Atomic script dynamically
+    const script = document.createElement("script");
+    script.type = "module";
+    script.src = "https://unpkg.com/@coveo/atomic@latest/dist/atomic/atomic.esm.js";
+    document.head.appendChild(script);
+
+    // Load Coveo Atomic styles
+    const link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.href = "https://unpkg.com/@coveo/atomic@latest/dist/atomic/themes/coveo.css";
+    document.head.appendChild(link);
+
+    // Initialize Coveo when script loads
     const initCoveo = async () => {
-      const atomic = await customElements.whenDefined("atomic-search-interface");
-      const searchInterface = document.querySelector("atomic-search-interface");
-      if (searchInterface) {
+      await customElements.whenDefined("atomic-search-interface");
+      if (searchInterfaceRef.current) {
+        const searchInterface = searchInterfaceRef.current as unknown as {
+          initialize: (config: { accessToken: string; organizationId: string }) => Promise<void>;
+        };
         await searchInterface.initialize({
           accessToken: "xx564559b1-0045-48e1-953c-3addd4ee4323",
           organizationId: "searchuisamples",
@@ -14,52 +30,29 @@ const CoveoSearchPage = () => {
       }
     };
 
-    initCoveo();
+    script.onload = () => {
+      initCoveo();
+    };
+
+    return () => {
+      document.head.removeChild(script);
+      document.head.removeChild(link);
+    };
   }, []);
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Load Coveo Atomic script and styles */}
-      <script
-        type="module"
-        src="https://unpkg.com/@coveo/atomic@latest/dist/atomic/atomic.esm.js"
-      />
-      <link
-        rel="stylesheet"
-        href="https://unpkg.com/@coveo/atomic@latest/dist/atomic/themes/coveo.css"
-      />
-
       <atomic-search-interface
+        ref={searchInterfaceRef}
         search-hub="Search"
         pipeline="default"
         language="en"
         timezone="America/New_York"
         currency="USD"
-        numberOfResults={10}
-        searchEngineOptions={{
-          preprocessRequest: (request) => {
-            const body = JSON.parse(request.body as string);
-            body.customParam = "value";
-            request.body = JSON.stringify(body);
-            return request;
-          },
-        }}
       >
         <atomic-search-layout>
           <atomic-layout-section section="search">
-            <atomic-search-box
-              suggestion-timeout={1000}
-              minimum-query-length={1}
-              number-of-suggestions={5}
-              clear-filters-on-new-search
-              disable-query-syntax
-              enable-query-syntax={false}
-              search-box-option={{
-                highlightOptions: {
-                  notMatch: (text) => text.startsWith("@"),
-                },
-              }}
-            >
+            <atomic-search-box>
               <atomic-search-box-recent-queries />
               <atomic-search-box-query-suggestions />
             </atomic-search-box>
@@ -67,42 +60,11 @@ const CoveoSearchPage = () => {
 
           <atomic-layout-section section="facets">
             <atomic-facet-manager>
-              <atomic-facet
-                field="source"
-                label="Source"
-                numberOfValues={5}
-                sortCriteria="occurrences"
-              />
-              <atomic-facet
-                field="objecttype"
-                label="Type"
-                numberOfValues={5}
-                sortCriteria="occurrences"
-              />
-              <atomic-facet
-                field="filetype"
-                label="File Type"
-                numberOfValues={5}
-                sortCriteria="occurrences"
-              />
-              <atomic-facet
-                field="author"
-                label="Author"
-                numberOfValues={5}
-                sortCriteria="occurrences"
-              />
-              <atomic-facet
-                field="year"
-                label="Year"
-                numberOfValues={5}
-                sortCriteria="occurrences"
-              />
-              <atomic-facet
-                field="month"
-                label="Month"
-                numberOfValues={5}
-                sortCriteria="occurrences"
-              />
+              <atomic-facet field="source" label="Source" />
+              <atomic-facet field="objecttype" label="Type" />
+              <atomic-facet field="filetype" label="File Type" />
+              <atomic-facet field="author" label="Author" />
+              <atomic-facet field="year" label="Year" />
             </atomic-facet-manager>
           </atomic-layout-section>
 
@@ -115,12 +77,7 @@ const CoveoSearchPage = () => {
             </atomic-layout-section>
 
             <atomic-layout-section section="results">
-              <atomic-result-list
-                fieldsToInclude="source,objecttype,filetype,author,year,month"
-                imageSize="small"
-                density="normal"
-                display="list"
-              >
+              <atomic-result-list>
                 <atomic-result-template>
                   <template>
                     <atomic-result-section-visual>
@@ -135,22 +92,13 @@ const CoveoSearchPage = () => {
                     <atomic-result-section-bottom-metadata>
                       <atomic-result-fields-list>
                         <atomic-field-condition if-defined="source">
-                          <atomic-result-text
-                            field="source"
-                            label="Source"
-                          />
+                          <atomic-result-text field="source" label="Source" />
                         </atomic-field-condition>
                         <atomic-field-condition if-defined="objecttype">
-                          <atomic-result-text
-                            field="objecttype"
-                            label="Type"
-                          />
+                          <atomic-result-text field="objecttype" label="Type" />
                         </atomic-field-condition>
                         <atomic-field-condition if-defined="author">
-                          <atomic-result-text
-                            field="author"
-                            label="Author"
-                          />
+                          <atomic-result-text field="author" label="Author" />
                         </atomic-field-condition>
                       </atomic-result-fields-list>
                     </atomic-result-section-bottom-metadata>
