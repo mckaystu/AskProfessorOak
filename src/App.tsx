@@ -39,7 +39,7 @@ function App() {
         <h1 className="text-4xl font-bold text-red-600">Pokedex Search</h1>
       </header>
 
-      <atomic-search-interface pipeline="default" search-hub="MainSearch">
+      <atomic-search-interface pipeline="default" search-hub="MainSearch" language-assets-path="https://static.cloud.coveo.com/atomic/v3/lang/" icon-assets-path="https://static.cloud.coveo.com/atomic/v3/assets/">
         <atomic-search-layout>
           {/* SEARCH BOX */}
           <atomic-layout-section section="search">
@@ -71,7 +71,7 @@ function App() {
                 field="poketype"
                 label="Pokemon Type"
                 with-search="false"
-                display-values-as="link"
+                display-values-as="checkbox"
               ></atomic-facet>
             </atomic-facet-manager>
           </atomic-layout-section>
