@@ -39,7 +39,7 @@ function App() {
         <h1 className="text-4xl font-bold text-red-600">Pokedex Search</h1>
       </header>
 
-      <atomic-search-interface pipeline="default" search-hub="MainSearch">
+      <atomic-search-interface pipeline="default" search-hub="MainSearch" fields-to-include='["pokemon_thumbnail","pokemongeneration","poketype"]'>
         <atomic-search-layout>
           {/* SEARCH BOX */}
           <atomic-layout-section section="search">
