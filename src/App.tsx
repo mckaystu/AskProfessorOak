@@ -122,7 +122,7 @@ function App() {
                 {results.map((result) => {
                   const pokemonName = getPokemonName(result);
                   const pokemonType = getPokemonType(result);
-                  const spriteUrl = spriteUrls[result.uniqueId] || "/placeholder.svg";
+                  const spriteUrl = getThumbnailUrl(result) || "/placeholder.svg";
 
                   return (
                     <article key={result.uniqueId} className="result-card flex gap-4">
