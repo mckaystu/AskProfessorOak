@@ -14,29 +14,35 @@ function App() {
   const [hasQuery, setHasQuery] = useState(false);
 
   useEffect(() => {
+    // Inject the result list with template via DOM BEFORE Coveo initializes
+    const resultsContainer = document.getElementById("atomic-results-container");
+    if (resultsContainer && !resultsContainer.querySelector("atomic-result-list")) {
+      resultsContainer.innerHTML = `
+        <atomic-result-list display="list" image-size="small">
+          <atomic-result-template>
+            <template>
+              <atomic-result-section-visual>
+                <atomic-result-image field="pokemon_thumbnail"></atomic-result-image>
+              </atomic-result-section-visual>
+              <atomic-result-section-title>
+                <atomic-result-link></atomic-result-link>
+              </atomic-result-section-title>
+              <atomic-result-section-excerpt>
+                <atomic-result-text field="excerpt"></atomic-result-text>
+              </atomic-result-section-excerpt>
+              <atomic-result-section-bottom-metadata>
+                <atomic-result-badge field="poketype"></atomic-result-badge>
+              </atomic-result-section-bottom-metadata>
+            </template>
+          </atomic-result-template>
+        </atomic-result-list>
+        <atomic-query-error></atomic-query-error>
+        <atomic-no-results></atomic-no-results>
+      `;
+    }
+
     const init = async () => {
       await customElements.whenDefined("atomic-search-interface");
-
-      // Inject the template into atomic-result-template via DOM
-      const resultTemplate = document.querySelector("atomic-result-template");
-      if (resultTemplate && !resultTemplate.querySelector("template")) {
-        const template = document.createElement("template");
-        template.innerHTML = `
-          <atomic-result-section-visual>
-            <atomic-result-image field="pokemon_thumbnail"></atomic-result-image>
-          </atomic-result-section-visual>
-          <atomic-result-section-title>
-            <atomic-result-link></atomic-result-link>
-          </atomic-result-section-title>
-          <atomic-result-section-excerpt>
-            <atomic-result-text field="excerpt"></atomic-result-text>
-          </atomic-result-section-excerpt>
-          <atomic-result-section-bottom-metadata>
-            <atomic-result-badge field="poketype"></atomic-result-badge>
-          </atomic-result-section-bottom-metadata>
-        `;
-        resultTemplate.appendChild(template);
-      }
 
       const searchInterface = document.querySelector("atomic-search-interface") as any;
       if (!searchInterface) return;
