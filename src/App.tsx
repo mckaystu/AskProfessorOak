@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import "./App.css";
 
 // Tell TypeScript/React to ignore the custom Atomic tags
@@ -11,6 +11,8 @@ declare global {
 }
 
 function App() {
+  const [hasQuery, setHasQuery] = useState(false);
+
   useEffect(() => {
     const init = async () => {
       await customElements.whenDefined("atomic-search-interface");
@@ -23,7 +25,16 @@ function App() {
           accessToken: "xx4e0a0e64-3530-4114-b061-91e997542bec",
           organizationId: "pw6jnyqt56qcqeodapy2bii2ji4",
         });
-        searchInterface.executeFirstSearch();
+
+        // Listen for query changes via the Headless engine
+        const engine = searchInterface.engine;
+        if (engine) {
+          engine.subscribe(() => {
+            const state = engine.state;
+            const query = state?.query?.q || "";
+            setHasQuery(query.trim().length > 0);
+          });
+        }
       } catch (error) {
         console.error("Failed to initialize Coveo Atomic:", error);
       }
