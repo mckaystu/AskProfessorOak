@@ -42,6 +42,13 @@ function App() {
     return "";
   };
 
+  const getDisplayPokemonName = (result: any) => {
+    const name = result?.raw?.pokemonname;
+    if (Array.isArray(name) && name.length > 0) return String(name[0]);
+    if (typeof name === "string") return name;
+    return "";
+  };
+
   useEffect(() => {
     const init = async () => {
       await customElements.whenDefined("atomic-search-interface");
@@ -81,7 +88,7 @@ function App() {
         <atomic-search-interface
           pipeline="default"
           search-hub="MainSearch"
-          fields-to-include='["pokemon_thumbnail","pokemongeneration","poketype"]'
+          fields-to-include='["pokemon_thumbnail","pokemongeneration","poketype","pokemonname"]'
         >
           <atomic-search-layout>
             <atomic-layout-section section="search">
@@ -115,7 +122,8 @@ function App() {
             <atomic-layout-section section="results">
               <div className="space-y-4">
                 {results.map((result) => {
-                  const pokemonName = getPokemonName(result);
+                  const extractedName = getPokemonName(result);
+                  const displayName = getDisplayPokemonName(result);
                   const pokemonType = getPokemonType(result);
                   const spriteUrl = getThumbnailUrl(result) || "/placeholder.svg";
 
@@ -123,7 +131,7 @@ function App() {
                     <article key={result.uniqueId} className="result-card flex gap-4">
                       <img
                         src={spriteUrl}
-                        alt={`${pokemonName} thumbnail`}
+                        alt={`${extractedName} thumbnail`}
                         loading="lazy"
                         referrerPolicy="no-referrer"
                         className="h-40 w-40 shrink-0 object-contain"
@@ -136,7 +144,10 @@ function App() {
                       />
 
                       <div className="min-w-0">
-                        <a href={result.clickUri} target="_blank" rel="noreferrer" className="pokemon-name block hover:underline">
+                        {displayName ? (
+                          <p className="pokemon-name mb-1 font-bold text-lg">{displayName}</p>
+                        ) : null}
+                        <a href={result.clickUri} target="_blank" rel="noreferrer" className="block hover:underline text-blue-600">
                           {result.title}
                         </a>
                         <p className="pokemon-description">{result.excerpt}</p>
