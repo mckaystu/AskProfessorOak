@@ -19,13 +19,20 @@ function App() {
     const uriMatch = clickUri.match(/\/pokedex\/([^/?#]+)/i);
     if (uriMatch?.[1]) return uriMatch[1].toLowerCase();
 
-    const thumbnailUrl = result?.raw?.pokemon_thumbnail || "";
+    const rawThumbnail = result?.raw?.pokemon_thumbnail;
+    const thumbnailUrl = Array.isArray(rawThumbnail) && rawThumbnail.length > 0
+      ? rawThumbnail[0]
+      : (typeof rawThumbnail === "string" ? rawThumbnail : "");
     const thumbMatch = thumbnailUrl.match(/\/([^/]+)\.(?:png|jpg|jpeg|webp)$/i);
     return thumbMatch?.[1]?.toLowerCase() ?? "pokemon";
   };
 
   const getThumbnailUrl = (result: any) => {
-    return result?.raw?.pokemon_thumbnail || "/placeholder.svg";
+    const rawThumbnail = result?.raw?.pokemon_thumbnail;
+    const url = Array.isArray(rawThumbnail) && rawThumbnail.length > 0 
+      ? rawThumbnail[0] 
+      : (typeof rawThumbnail === "string" ? rawThumbnail : "/placeholder.svg");
+    return url;
   };
 
   const getPokemonType = (result: any) => {
