@@ -42,6 +42,13 @@ function App() {
     return "";
   };
 
+  const getPokemonSpecies = (result: any) => {
+    const species = result?.raw?.pokemonspecies;
+    if (Array.isArray(species) && species.length > 0) return String(species[0]);
+    if (typeof species === "string") return species;
+    return "";
+  };
+
   const getDisplayPokemonName = (result: any) => {
     const name = result?.raw?.pokemonname;
     if (Array.isArray(name) && name.length > 0) return String(name[0]);
@@ -88,7 +95,7 @@ function App() {
         <atomic-search-interface
           pipeline="default"
           search-hub="MainSearch"
-          fields-to-include='["pokemon_thumbnail","pokemongeneration","poketype","pokemonname"]'
+          fields-to-include='["pokemon_thumbnail","pokemongeneration","poketype","pokemonname","pokemonspecies"]'
         >
           <atomic-search-layout>
             <atomic-layout-section section="search">
@@ -125,6 +132,7 @@ function App() {
                   const extractedName = getPokemonName(result);
                   const displayName = getDisplayPokemonName(result);
                   const pokemonType = getPokemonType(result);
+                  const pokemonSpecies = getPokemonSpecies(result);
                   const spriteUrl = getThumbnailUrl(result) || "/placeholder.svg";
 
                   return (
@@ -148,7 +156,12 @@ function App() {
                           {displayName || result.title}
                         </a>
                         {result.excerpt ? <p className="pokemon-description">{result.excerpt}</p> : null}
-                        {pokemonType ? <p className="mt-2 text-sm font-semibold text-gray-600">{pokemonType}</p> : null}
+                        {(pokemonSpecies || pokemonType) ? (
+                          <p className="mt-2 text-sm font-semibold text-gray-600">
+                            {pokemonSpecies ? <span className="mr-3">Species: {pokemonSpecies}</span> : null}
+                            {pokemonType ? <span>Type: {pokemonType}</span> : null}
+                          </p>
+                        ) : null}
                       </div>
                     </article>
                   );
