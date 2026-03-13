@@ -73,7 +73,7 @@ function App() {
   }, []);
 
   return (
-    <div className="dark min-h-screen bg-background p-4 text-foreground">
+    <div className="min-h-screen bg-background p-4 text-foreground">
       <header className="mb-8 text-center">
         <h1 className="text-4xl font-bold text-destructive">Pokedex Search</h1>
       </header>
