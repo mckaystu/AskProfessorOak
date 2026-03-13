@@ -77,15 +77,16 @@ function App() {
         <h1 className="text-4xl font-bold text-red-600">Pokedex Search</h1>
       </header>
 
-      <atomic-search-interface
-        pipeline="default"
-        search-hub="MainSearch"
-        fields-to-include='["pokemon_thumbnail","pokemongeneration","poketype"]'
-      >
-        <atomic-search-layout>
-          <atomic-layout-section section="search">
-            <atomic-search-box></atomic-search-box>
-          </atomic-layout-section>
+      <div className="mx-auto max-w-3xl">
+        <atomic-search-interface
+          pipeline="default"
+          search-hub="MainSearch"
+          fields-to-include='["pokemon_thumbnail","pokemongeneration","poketype"]'
+        >
+          <atomic-search-layout>
+            <atomic-layout-section section="search">
+              <atomic-search-box></atomic-search-box>
+            </atomic-layout-section>
 
           <atomic-layout-section section="facets" class={hasQuery ? "" : "hidden-section"}>
             <atomic-facet-manager>
