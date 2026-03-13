@@ -144,13 +144,10 @@ function App() {
                       />
 
                       <div className="min-w-0">
-                        {displayName ? (
-                          <p className="pokemon-name mb-1 font-bold text-lg">{displayName}</p>
-                        ) : null}
-                        <a href={result.clickUri} target="_blank" rel="noreferrer" className="block hover:underline text-blue-600">
-                          {result.title}
+                        <a href={result.clickUri} target="_blank" rel="noreferrer" className="pokemon-name block hover:underline font-bold text-lg">
+                          {displayName || result.title}
                         </a>
-                        <p className="pokemon-description">{result.excerpt}</p>
+                        {result.excerpt ? <p className="pokemon-description">{result.excerpt}</p> : null}
                         {pokemonType ? <p className="mt-2 text-sm font-semibold text-gray-600">{pokemonType}</p> : null}
                       </div>
                     </article>
