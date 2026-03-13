@@ -122,7 +122,8 @@ function App() {
             <atomic-layout-section section="results">
               <div className="space-y-4">
                 {results.map((result) => {
-                  const pokemonName = getPokemonName(result);
+                  const extractedName = getPokemonName(result);
+                  const displayName = getDisplayPokemonName(result);
                   const pokemonType = getPokemonType(result);
                   const spriteUrl = getThumbnailUrl(result) || "/placeholder.svg";
 
@@ -130,7 +131,7 @@ function App() {
                     <article key={result.uniqueId} className="result-card flex gap-4">
                       <img
                         src={spriteUrl}
-                        alt={`${pokemonName} thumbnail`}
+                        alt={`${extractedName} thumbnail`}
                         loading="lazy"
                         referrerPolicy="no-referrer"
                         className="h-40 w-40 shrink-0 object-contain"
@@ -143,7 +144,10 @@ function App() {
                       />
 
                       <div className="min-w-0">
-                        <a href={result.clickUri} target="_blank" rel="noreferrer" className="pokemon-name block hover:underline">
+                        {displayName ? (
+                          <p className="pokemon-name mb-1 font-bold text-lg">{displayName}</p>
+                        ) : null}
+                        <a href={result.clickUri} target="_blank" rel="noreferrer" className="block hover:underline text-blue-600">
                           {result.title}
                         </a>
                         <p className="pokemon-description">{result.excerpt}</p>
