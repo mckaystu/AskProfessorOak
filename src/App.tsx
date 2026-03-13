@@ -156,7 +156,12 @@ function App() {
                           {displayName || result.title}
                         </a>
                         {result.excerpt ? <p className="pokemon-description">{result.excerpt}</p> : null}
-                        {pokemonType ? <p className="mt-2 text-sm font-semibold text-gray-600">{pokemonType}</p> : null}
+                        {(pokemonSpecies || pokemonType) ? (
+                          <p className="mt-2 text-sm font-semibold text-gray-600">
+                            {pokemonSpecies ? <span className="mr-3">Species: {pokemonSpecies}</span> : null}
+                            {pokemonType ? <span>Type: {pokemonType}</span> : null}
+                          </p>
+                        ) : null}
                       </div>
                     </article>
                   );
