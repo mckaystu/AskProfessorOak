@@ -42,6 +42,13 @@ function App() {
     return "";
   };
 
+  const getPokemonSpecies = (result: any) => {
+    const species = result?.raw?.pokemonspecies;
+    if (Array.isArray(species) && species.length > 0) return String(species[0]);
+    if (typeof species === "string") return species;
+    return "";
+  };
+
   const getDisplayPokemonName = (result: any) => {
     const name = result?.raw?.pokemonname;
     if (Array.isArray(name) && name.length > 0) return String(name[0]);
