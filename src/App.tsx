@@ -29,11 +29,9 @@ function App() {
 
   const getThumbnailUrl = (result: any) => {
     const rawThumbnail = result?.raw?.pokemon_thumbnail;
-    console.log("[DEBUG] rawThumbnail:", rawThumbnail, "type:", typeof rawThumbnail, "isArray:", Array.isArray(rawThumbnail));
     const url = Array.isArray(rawThumbnail) && rawThumbnail.length > 0 
       ? rawThumbnail[0] 
       : (typeof rawThumbnail === "string" ? rawThumbnail : "/placeholder.svg");
-    console.log("[DEBUG] Extracted URL:", url);
     return url;
   };
 
