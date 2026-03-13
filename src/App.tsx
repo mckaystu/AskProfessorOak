@@ -42,7 +42,7 @@ function App() {
     return "";
   };
 
-  const getPokemonName = (result: any) => {
+  const getDisplayPokemonName = (result: any) => {
     const name = result?.raw?.pokemonname;
     if (Array.isArray(name) && name.length > 0) return String(name[0]);
     if (typeof name === "string") return name;
