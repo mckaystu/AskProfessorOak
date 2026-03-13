@@ -132,6 +132,7 @@ function App() {
                   const extractedName = getPokemonName(result);
                   const displayName = getDisplayPokemonName(result);
                   const pokemonType = getPokemonType(result);
+                  const pokemonSpecies = getPokemonSpecies(result);
                   const spriteUrl = getThumbnailUrl(result) || "/placeholder.svg";
 
                   return (
