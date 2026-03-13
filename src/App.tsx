@@ -25,8 +25,11 @@ function App() {
   };
 
   const getThumbnailUrl = (result: any) => {
-    const url = result?.raw?.pokemon_thumbnail || "/placeholder.svg";
-    console.log("[DEBUG] Thumbnail URL for", result?.title, ":", url, "raw data:", result?.raw);
+    const rawThumbnail = result?.raw?.pokemon_thumbnail;
+    // Handle both array and string formats
+    const url = Array.isArray(rawThumbnail) && rawThumbnail.length > 0 
+      ? rawThumbnail[0] 
+      : (typeof rawThumbnail === "string" ? rawThumbnail : "/placeholder.svg");
     return url;
   };
 
