@@ -85,7 +85,7 @@ function App() {
         >
           <atomic-search-layout>
             <atomic-layout-section section="search">
-              <atomic-search-box></atomic-search-box>
+              <atomic-search-box placeholder="Search for a Pokémon (e.g., Pikachu or 025)..."></atomic-search-box>
             </atomic-layout-section>
 
           <atomic-layout-section section="facets" class={hasQuery ? "" : "hidden-section"}>
