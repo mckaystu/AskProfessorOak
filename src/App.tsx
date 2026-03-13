@@ -157,10 +157,10 @@ function App() {
                         </a>
                         {result.excerpt ? <p className="pokemon-description">{result.excerpt}</p> : null}
                         {(pokemonSpecies || pokemonType) ? (
-                          <p className="mt-2 text-sm font-semibold text-gray-600">
-                            {pokemonSpecies ? <span className="mr-3">Species: {pokemonSpecies}</span> : null}
-                            {pokemonType ? <span>Type: {pokemonType}</span> : null}
-                          </p>
+                          <div className="mt-2 text-sm font-semibold text-gray-600">
+                            {pokemonSpecies ? <p>Species: {pokemonSpecies}</p> : null}
+                            {pokemonType ? <p>Type: {pokemonType}</p> : null}
+                          </div>
                         ) : null}
                       </div>
                     </article>
