@@ -59,13 +59,7 @@ function App() {
             const state = engine.state;
             const query = state?.query?.q || "";
             setHasQuery(query.trim().length > 0);
-            const newResults = state?.search?.results || [];
-            console.log("[DEBUG] Results count:", newResults.length);
-            if (newResults.length > 0) {
-              console.log("[DEBUG] First result raw:", newResults[0]?.raw);
-              console.log("[DEBUG] First result pokemon_thumbnail:", newResults[0]?.raw?.pokemon_thumbnail);
-            }
-            setResults(newResults);
+            setResults(state?.search?.results || []);
           });
         }
       } catch (error) {
