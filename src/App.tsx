@@ -25,7 +25,9 @@ function App() {
   };
 
   const getThumbnailUrl = (result: any) => {
-    return result?.raw?.pokemon_thumbnail || "/placeholder.svg";
+    const url = result?.raw?.pokemon_thumbnail || "/placeholder.svg";
+    console.log("[DEBUG] Thumbnail URL for", result?.title, ":", url, "raw data:", result?.raw);
+    return url;
   };
 
   const getPokemonType = (result: any) => {
