@@ -95,7 +95,7 @@ function App() {
         <atomic-search-interface
           pipeline="default"
           search-hub="MainSearch"
-          fields-to-include='["pokemon_thumbnail","pokemongeneration","poketype","pokemonname"]'
+          fields-to-include='["pokemon_thumbnail","pokemongeneration","poketype","pokemonname","pokemonspecies"]'
         >
           <atomic-search-layout>
             <atomic-layout-section section="search">
