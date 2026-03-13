@@ -51,8 +51,8 @@ function App() {
 
       try {
         await searchInterface.initialize({
-          accessToken: "xx4e0a0e64-3530-4114-b061-91e997542bec",
-          organizationId: "pw6jnyqt56qcqeodapy2bii2ji4",
+          accessToken: "xx3824fb63-5208-448c-b651-64d479c921ce",
+          organizationId: "stumckaytechnicalsuccesspokemontestmh1o8r76",
         });
 
         const engine = searchInterface.engine;
