@@ -157,6 +157,7 @@ function App() {
           </atomic-layout-section>
         </atomic-search-layout>
       </atomic-search-interface>
+      </div>
     </div>
   );
 }
