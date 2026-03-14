@@ -142,16 +142,25 @@ function App() {
                 const spriteUrl = getThumbnailUrl(result);
 
                 return (
-                  <Link
+                  <a
                     key={result.uniqueId}
-                    to={`/pokemon/${displayName.toLowerCase()}`}
-                    state={{
-                      thumbnail: spriteUrl,
-                      types,
-                      species: getStringField(result.raw?.pokemonspecies),
-                      generation: getStringField(result.raw?.pokemongeneration),
+                    onClick={() => {
+                      if (engineRef.current) {
+                        const interactiveResult = buildInteractiveResult(engineRef.current, {
+                          options: { result: result as any },
+                        });
+                        interactiveResult.select();
+                      }
+                      navigate(`/pokemon/${displayName.toLowerCase()}`, {
+                        state: {
+                          thumbnail: spriteUrl,
+                          types,
+                          species: getStringField(result.raw?.pokemonspecies),
+                          generation: getStringField(result.raw?.pokemongeneration),
+                        },
+                      });
                     }}
-                    className="result-card-grid group"
+                    className="result-card-grid group cursor-pointer"
                   >
                     <img
                       src={spriteUrl}
