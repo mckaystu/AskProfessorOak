@@ -19,6 +19,7 @@ interface SearchResult {
     poketype?: string | string[];
     pokemonname?: string | string[];
     pokemonspecies?: string | string[];
+    pokemongeneration?: string | string[];
   };
 }
 
