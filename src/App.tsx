@@ -19,6 +19,7 @@ interface SearchResult {
     poketype?: string | string[];
     pokemonname?: string | string[];
     pokemonspecies?: string | string[];
+    pokemongeneration?: string | string[];
   };
 }
 
@@ -132,6 +133,12 @@ function App() {
                   <Link
                     key={result.uniqueId}
                     to={`/pokemon/${displayName.toLowerCase()}`}
+                    state={{
+                      thumbnail: spriteUrl,
+                      types,
+                      species: getStringField(result.raw?.pokemonspecies),
+                      generation: getStringField(result.raw?.pokemongeneration),
+                    }}
                     className="result-card-grid group"
                   >
                     <img
