@@ -129,11 +129,9 @@ function App() {
                 const spriteUrl = getThumbnailUrl(result);
 
                 return (
-                  <a
+                  <Link
                     key={result.uniqueId}
-                    href={result.clickUri}
-                    target="_blank"
-                    rel="noreferrer"
+                    to={`/pokemon/${displayName.toLowerCase()}`}
                     className="result-card-grid group"
                   >
                     <img
