@@ -56,6 +56,8 @@ const needsDarkText = (type: string) => ["Electric", "Ice", "Steel"].includes(ty
 
 function App() {
   const [results, setResults] = useState<SearchResult[]>([]);
+  const engineRef = useRef<any>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const init = async () => {
@@ -72,6 +74,7 @@ function App() {
 
         const engine = searchInterface.engine;
         if (engine) {
+          engineRef.current = engine;
           engine.subscribe(() => {
             const state = engine.state;
             setResults(state?.search?.results || []);
