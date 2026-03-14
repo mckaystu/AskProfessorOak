@@ -44,7 +44,7 @@ function App() {
       <atomic-search-interface
         pipeline="PKSearch"
         search-hub="pokemon-search"
-        fields-to-include='["pokemon_thumbnail","pokemongeneration","poketype","pokemonname","pokemonspecies","pokemonhp"]'
+        fields-to-include='["pokemon_thumbnail","pokemongeneration","poketype","pokemonname","pokemonspecies"]'
       >
         <div className="flex min-h-[calc(100vh-65px)]">
           {/* Sidebar Facets */}
