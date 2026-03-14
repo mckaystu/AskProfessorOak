@@ -87,7 +87,14 @@ function App() {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <header className="border-b border-border bg-card px-6 py-4">
-        <h1 className="text-3xl font-bold text-destructive tracking-tight">Pokédex Search</h1>
+        <div className="flex items-center gap-4">
+          <img
+            src={oakAvatar}
+            alt="Professor Oak"
+            className="h-12 w-12 rounded-full object-cover border-2 border-primary shadow-sm"
+          />
+          <h1 className="text-3xl font-bold text-destructive tracking-tight">Ask Professor Oak</h1>
+        </div>
       </header>
 
       <atomic-search-interface
