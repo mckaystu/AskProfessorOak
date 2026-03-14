@@ -1,4 +1,6 @@
 import { useParams, useLocation, Link } from "react-router-dom";
+import { useEffect } from "react";
+import { CoveoAnalyticsClient } from "coveo.analytics";
 
 const TYPE_COLORS: Record<string, string> = {
   Normal: "#A8A77A", Fire: "#EE8130", Water: "#6390F0", Electric: "#F7D02C",
@@ -21,6 +23,21 @@ const PokemonDetail = () => {
   const { name } = useParams<{ name: string }>();
   const location = useLocation();
   const state = (location.state as LocationState) || {};
+
+  useEffect(() => {
+    if (!name) return;
+
+    const client = new CoveoAnalyticsClient({
+      token: "xx3824fb63-5208-448c-b651-64d479c921ce",
+    });
+
+    client.sendViewEvent({
+      contentIdKey: "pokemonname",
+      contentIdValue: name,
+      contentType: "Pokemon",
+      title: `${name.charAt(0).toUpperCase() + name.slice(1)} Detail Page`,
+    });
+  }, [name]);
 
   return (
     <div className="min-h-screen bg-background text-foreground">
