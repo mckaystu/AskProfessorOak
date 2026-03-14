@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useRef } from "react";
 import oakAvatar from "./assets/professor-oak.png";
 import "./App.css";
 
@@ -11,55 +10,62 @@ declare global {
   }
 }
 
-interface SearchResult {
-  uniqueId: string;
-  title: string;
-  clickUri: string;
-  raw?: {
-    pokemon_thumbnail?: string | string[];
-    poketype?: string | string[];
-    pokemonname?: string | string[];
-    pokemonspecies?: string | string[];
-    pokemongeneration?: string | string[];
-  };
-}
-
-const getStringField = (value: unknown): string => {
-  if (Array.isArray(value) && value.length > 0) return String(value[0]);
-  if (typeof value === "string") return value;
-  return "";
-};
-
-const getStringArrayField = (value: unknown): string[] => {
-  if (Array.isArray(value)) return value.map(String);
-  if (typeof value === "string") return [value];
-  return [];
-};
-
-const getThumbnailUrl = (result: SearchResult): string => {
-  const raw = result.raw?.pokemon_thumbnail;
-  if (Array.isArray(raw) && raw.length > 0) return raw[0];
-  if (typeof raw === "string") return raw;
-  return "/placeholder.svg";
-};
-
-const TYPE_COLORS: Record<string, string> = {
-  Normal: "#A8A77A", Fire: "#EE8130", Water: "#6390F0", Electric: "#F7D02C",
-  Grass: "#7AC74C", Ice: "#96D9D6", Fighting: "#C22E28", Poison: "#A33EA1",
-  Ground: "#E2BF65", Flying: "#A98FF3", Psychic: "#F95587", Bug: "#A6B91A",
-  Rock: "#B6A136", Ghost: "#735797", Dragon: "#6F35FC", Dark: "#705746",
-  Steel: "#B7B7CE", Fairy: "#D685AD", Stellar: "#40B5A5",
-};
-
-const needsDarkText = (type: string) => ["Electric", "Ice", "Steel"].includes(type);
+const RESULT_TEMPLATE_HTML = `
+  <style>
+    .result-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 16px;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      background: #fff;
+      transition: box-shadow 0.2s, transform 0.2s;
+      text-align: center;
+      text-decoration: none;
+      color: inherit;
+      height: 100%;
+    }
+    .result-card:hover {
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+      transform: translateY(-2px);
+    }
+    .result-card atomic-result-image {
+      height: 7rem;
+      width: 7rem;
+    }
+    .result-card .name {
+      margin-top: 0.5rem;
+      font-size: 0.875rem;
+      font-weight: 700;
+      text-transform: capitalize;
+    }
+    .result-card .types {
+      margin-top: 0.375rem;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.25rem;
+    }
+  </style>
+  <atomic-result-link class="result-card">
+    <atomic-result-image field="pokemon_thumbnail" fallback="/placeholder.svg"></atomic-result-image>
+    <span class="name"><atomic-result-text field="pokemonname"></atomic-result-text></span>
+    <span class="types"><atomic-result-multi-value-text field="poketype"></atomic-result-multi-value-text></span>
+  </atomic-result-link>
+`;
 
 function App() {
-  const [results, setResults] = useState<SearchResult[]>([]);
+  const templateRef = useRef<HTMLTemplateElement>(null);
 
   useEffect(() => {
+    // Set template innerHTML before Coveo initializes
+    if (templateRef.current) {
+      templateRef.current.innerHTML = RESULT_TEMPLATE_HTML;
+    }
+
     const init = async () => {
       await customElements.whenDefined("atomic-search-interface");
-
       const searchInterface = document.querySelector("atomic-search-interface") as any;
       if (!searchInterface) return;
 
@@ -68,15 +74,7 @@ function App() {
           accessToken: "xx3824fb63-5208-448c-b651-64d479c921ce",
           organizationId: "stumckaytechnicalsuccesspokemontestmh1o8r76",
         });
-
-        const engine = searchInterface.engine;
-        if (engine) {
-          engine.subscribe(() => {
-            const state = engine.state;
-            setResults(state?.search?.results || []);
-          });
-          engine.executeFirstSearch();
-        }
+        searchInterface.executeFirstSearch();
       } catch (error) {
         console.error("Failed to initialize Coveo Atomic:", error);
       }
