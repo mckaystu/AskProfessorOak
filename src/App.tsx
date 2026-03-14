@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import "./App.css";
 
 declare global {
@@ -9,36 +9,7 @@ declare global {
   }
 }
 
-interface SearchResult {
-  uniqueId: string;
-  title: string;
-  clickUri: string;
-  excerpt?: string;
-  raw?: {
-    pokemon_thumbnail?: string | string[];
-    poketype?: string | string[];
-    pokemonname?: string | string[];
-    pokemonspecies?: string | string[];
-  };
-}
-
-const getStringField = (value: unknown): string => {
-  if (Array.isArray(value) && value.length > 0) return String(value[0]);
-  if (typeof value === "string") return value;
-  return "";
-};
-
-const getThumbnailUrl = (result: SearchResult): string => {
-  const raw = result.raw?.pokemon_thumbnail;
-  if (Array.isArray(raw) && raw.length > 0) return raw[0];
-  if (typeof raw === "string") return raw;
-  return "/placeholder.svg";
-};
-
 function App() {
-  const [hasQuery, setHasQuery] = useState(false);
-  const [results, setResults] = useState<SearchResult[]>([]);
-
   useEffect(() => {
     const init = async () => {
       await customElements.whenDefined("atomic-search-interface");
@@ -54,14 +25,6 @@ function App() {
 
         const engine = searchInterface.engine;
         if (engine) {
-          engine.subscribe(() => {
-            const state = engine.state;
-            const query = state?.query?.q || "";
-            setHasQuery(query.trim().length > 0);
-            setResults(state?.search?.results || []);
-          });
-
-          // Trigger default search on page load
           engine.executeFirstSearch();
         }
       } catch (error) {
@@ -73,97 +36,138 @@ function App() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-background p-4 text-foreground">
-      <header className="mb-8 text-center">
-        <h1 className="text-4xl font-bold text-destructive">Pokedex Search</h1>
+    <div className="min-h-screen bg-background text-foreground">
+      <header className="border-b border-border bg-card px-6 py-4">
+        <h1 className="text-3xl font-bold text-destructive tracking-tight">Pokédex Search</h1>
       </header>
 
-      <div className="mx-auto max-w-3xl">
-        <atomic-search-interface
-          pipeline="PKSearch"
-          search-hub="pokemon-search"
-          fields-to-include='["pokemon_thumbnail","pokemongeneration","poketype","pokemonname","pokemonspecies"]'
-        >
-          <atomic-search-layout>
-            <atomic-layout-section section="search">
+      <atomic-search-interface
+        pipeline="PKSearch"
+        search-hub="pokemon-search"
+        fields-to-include='["pokemon_thumbnail","pokemongeneration","poketype","pokemonname","pokemonspecies","pokemonhp"]'
+      >
+        <div className="flex min-h-[calc(100vh-65px)]">
+          {/* Sidebar Facets */}
+          <aside className="facet-sidebar w-72 shrink-0 border-r border-border bg-card p-5 overflow-y-auto">
+            <atomic-facet-manager>
+              <atomic-facet
+                field="poketype"
+                label="Type"
+                with-search="false"
+                display-values-as="checkbox"
+              />
+              <atomic-facet
+                field="pokemongeneration"
+                label="Generation"
+                with-search="false"
+                display-values-as="checkbox"
+              />
+              <atomic-numeric-facet
+                field="pokemonhp"
+                label="HP"
+                with-input="input"
+                display-values-as="link"
+              >
+                <atomic-numeric-range start="0" end="50" label="0–50" />
+                <atomic-numeric-range start="51" end="100" label="51–100" />
+                <atomic-numeric-range start="101" end="150" label="101–150" />
+                <atomic-numeric-range start="151" end="255" label="151+" />
+              </atomic-numeric-facet>
+            </atomic-facet-manager>
+          </aside>
+
+          {/* Main Content */}
+          <main className="flex-1 p-6 overflow-y-auto">
+            {/* Search Bar */}
+            <div className="mb-6">
               <atomic-search-box placeholder="Search for a Pokémon (e.g., Pikachu or 025)..." />
-            </atomic-layout-section>
+            </div>
 
-            <atomic-layout-section section="facets">
-              <atomic-facet-manager>
-                <atomic-facet field="pokemongeneration" label="Generation" with-search="false" display-values-as="checkbox" />
-                <atomic-facet field="poketype" label="Pokemon Type" with-search="false" display-values-as="checkbox" />
-                <atomic-facet field="pokemonspecies" label="Species" with-search="false" display-values-as="checkbox" />
-              </atomic-facet-manager>
-            </atomic-layout-section>
+            {/* Status Bar */}
+            <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+              <atomic-query-summary />
+              <atomic-sort-dropdown>
+                <atomic-sort-expression label="Relevance" expression="relevancy" />
+                <atomic-sort-expression label="Name A–Z" expression="pokemonname ascending" />
+                <atomic-sort-expression label="Name Z–A" expression="pokemonname descending" />
+                <atomic-sort-expression label="HP: Low → High" expression="pokemonhp ascending" />
+                <atomic-sort-expression label="HP: High → Low" expression="pokemonhp descending" />
+              </atomic-sort-dropdown>
+            </div>
 
-            <atomic-layout-section section="main">
-              <atomic-layout-section section="status">
-                <div className="mb-4 flex items-center justify-between">
-                  <atomic-query-summary />
-                  <atomic-sort-dropdown>
-                    <atomic-sort-expression label="Relevance" expression="relevancy" />
-                    <atomic-sort-expression label="Newest" expression="date descending" />
-                  </atomic-sort-dropdown>
-                </div>
-                <atomic-breadbox />
-              </atomic-layout-section>
+            <atomic-breadbox className="mb-4" />
 
-              <atomic-layout-section section="results">
-                <div className="space-y-4">
-                  {results.map((result) => {
-                    const displayName = getStringField(result.raw?.pokemonname);
-                    const pokemonType = getStringField(result.raw?.poketype);
-                    const pokemonSpecies = getStringField(result.raw?.pokemonspecies);
-                    const spriteUrl = getThumbnailUrl(result);
+            {/* Grid Result List */}
+            <atomic-result-list
+              display="grid"
+              density="comfortable"
+              image-size="large"
+            >
+              <atomic-result-template>
+                <template>
+                  <style>{`
+                    .result-card-grid {
+                      display: flex;
+                      flex-direction: column;
+                      align-items: center;
+                      padding: 16px;
+                      border: 1px solid hsl(214.3, 31.8%, 91.4%);
+                      border-radius: 12px;
+                      background: hsl(0, 0%, 100%);
+                      transition: box-shadow 0.2s, transform 0.2s;
+                      text-align: center;
+                      height: 100%;
+                    }
+                    .result-card-grid:hover {
+                      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+                      transform: translateY(-2px);
+                    }
+                    .pokemon-sprite {
+                      width: 120px;
+                      height: 120px;
+                      object-fit: contain;
+                      margin-bottom: 8px;
+                    }
+                    .pokemon-grid-name {
+                      font-weight: 700;
+                      font-size: 1.1rem;
+                      text-transform: capitalize;
+                      margin-bottom: 6px;
+                      color: hsl(222.2, 84%, 4.9%);
+                    }
+                    .pokemon-grid-name a {
+                      color: inherit;
+                      text-decoration: none;
+                    }
+                    .pokemon-grid-name a:hover {
+                      text-decoration: underline;
+                    }
+                  `}</style>
+                  <div className="result-card-grid">
+                    <atomic-result-image
+                      field="pokemon_thumbnail"
+                      className="pokemon-sprite"
+                      fallback="/placeholder.svg"
+                    />
+                    <div className="pokemon-grid-name">
+                      <atomic-result-link />
+                    </div>
+                    <atomic-result-badge field="poketype" />
+                  </div>
+                </template>
+              </atomic-result-template>
+            </atomic-result-list>
 
-                    return (
-                      <article key={result.uniqueId} className="result-card flex gap-4">
-                        <img
-                          src={spriteUrl}
-                          alt={`${displayName || result.title} thumbnail`}
-                          loading="lazy"
-                          referrerPolicy="no-referrer"
-                          className="h-40 w-40 shrink-0 object-contain"
-                          onError={(e) => {
-                            const target = e.currentTarget;
-                            if (!target.src.includes("/placeholder.svg")) {
-                              target.src = "/placeholder.svg";
-                            }
-                          }}
-                        />
-                        <div className="min-w-0">
-                          <a
-                            href={result.clickUri}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="pokemon-name block hover:underline font-bold text-lg"
-                          >
-                            {displayName || result.title}
-                          </a>
-                          {result.excerpt && <p className="pokemon-description">{result.excerpt}</p>}
-                          {(pokemonSpecies || pokemonType) && (
-                            <div className="mt-2 text-sm font-semibold text-muted-foreground">
-                              {pokemonSpecies && <p>Species: {pokemonSpecies}</p>}
-                              {pokemonType && <p>Type: {pokemonType}</p>}
-                            </div>
-                          )}
-                        </div>
-                      </article>
-                    );
-                  })}
-                  {results.length === 0 && <atomic-no-results />}
-                  <atomic-query-error />
-                </div>
-              </atomic-layout-section>
+            <atomic-no-results />
+            <atomic-query-error />
 
-              <atomic-layout-section section="pagination">
-                <atomic-pager />
-              </atomic-layout-section>
-            </atomic-layout-section>
-          </atomic-search-layout>
-        </atomic-search-interface>
-      </div>
+            {/* Pagination */}
+            <div className="mt-8 flex justify-center">
+              <atomic-pager />
+            </div>
+          </main>
+        </div>
+      </atomic-search-interface>
     </div>
   );
 }

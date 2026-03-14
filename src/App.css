@@ -4,34 +4,28 @@ atomic-search-interface {
   width: 100%;
 }
 
-atomic-search-layout {
+/* Facet sidebar styling */
+.facet-sidebar atomic-facet,
+.facet-sidebar atomic-numeric-facet {
   display: block;
-  width: 100%;
+  margin-bottom: 1rem;
 }
 
-atomic-layout-section {
-  display: block;
+/* Grid result list */
+atomic-result-list[display="grid"] {
+  --atomic-result-list-grid-gap: 16px;
 }
 
-atomic-layout-section[section="main"] {
-  width: 100%;
-}
-
-atomic-layout-section[section="status"] {
-  width: 100%;
-}
-
-atomic-facet[field="poketype"]::part(value-count) {
-  display: none;
-}
-
-/* Type Color Coding */
+/* Type badge color coding */
 atomic-result-badge[field="poketype"]::part(badge-root) {
   text-transform: uppercase;
   font-weight: bold;
   color: white;
   border: none;
-  padding: 4px 8px;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  font-size: 0.7rem;
+  letter-spacing: 0.05em;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
@@ -55,28 +49,3 @@ atomic-result-badge[field="poketype"][value="Dark"]::part(badge-root) { backgrou
 atomic-result-badge[field="poketype"][value="Steel"]::part(badge-root) { background-color: #B7B7CE; color: #333; text-shadow: none; }
 atomic-result-badge[field="poketype"][value="Fairy"]::part(badge-root) { background-color: #D685AD; }
 atomic-result-badge[field="poketype"][value="Stellar"]::part(badge-root) { background: linear-gradient(45deg, #40B5A5, #E0306A, #103D7D); }
-
-/* Result card styling */
-.result-card {
-  padding: 16px;
-  border: 1px solid hsl(var(--border));
-  border-radius: 12px;
-  background: hsl(var(--card));
-  transition: box-shadow 0.2s;
-}
-
-.result-card:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.pokemon-name {
-  font-weight: bold;
-  font-size: 1.15rem;
-  text-transform: capitalize;
-}
-
-.pokemon-description {
-  font-size: 0.85rem;
-  color: hsl(var(--muted-foreground));
-  margin-top: 4px;
-}
