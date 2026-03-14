@@ -85,8 +85,6 @@ function App() {
                 <atomic-sort-expression label="Relevance" expression="relevancy" />
                 <atomic-sort-expression label="Name A–Z" expression="pokemonname ascending" />
                 <atomic-sort-expression label="Name Z–A" expression="pokemonname descending" />
-                <atomic-sort-expression label="HP: Low → High" expression="pokemonhp ascending" />
-                <atomic-sort-expression label="HP: High → Low" expression="pokemonhp descending" />
               </atomic-sort-dropdown>
             </div>
 
