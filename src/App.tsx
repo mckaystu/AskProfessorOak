@@ -62,17 +62,12 @@ function App() {
                 with-search="false"
                 display-values-as="checkbox"
               />
-              <atomic-numeric-facet
-                field="pokemonhp"
-                label="HP"
-                with-input="input"
-                display-values-as="link"
-              >
-                <atomic-numeric-range start="0" end="50" label="0–50" />
-                <atomic-numeric-range start="51" end="100" label="51–100" />
-                <atomic-numeric-range start="101" end="150" label="101–150" />
-                <atomic-numeric-range start="151" end="255" label="151+" />
-              </atomic-numeric-facet>
+              <atomic-facet
+                field="pokemonspecies"
+                label="Species"
+                with-search="false"
+                display-values-as="checkbox"
+              />
             </atomic-facet-manager>
           </aside>
 
