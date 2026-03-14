@@ -128,63 +128,13 @@ function App() {
 
             <atomic-breadbox className="mb-4" />
 
-            {/* Grid Results */}
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-              {results.map((result) => {
-                const displayName = getStringField(result.raw?.pokemonname) || result.title;
-                const types = getStringArrayField(result.raw?.poketype);
-                const spriteUrl = getThumbnailUrl(result);
+            <atomic-result-list display="grid" density="compact" image-size="small">
+              <atomic-result-template>
+                <template ref={templateRef}></template>
+              </atomic-result-template>
+            </atomic-result-list>
 
-                return (
-                  <Link
-                    key={result.uniqueId}
-                    to={`/pokemon/${displayName.toLowerCase()}`}
-                    state={{
-                      thumbnail: spriteUrl,
-                      types,
-                      species: getStringField(result.raw?.pokemonspecies),
-                      generation: getStringField(result.raw?.pokemongeneration),
-                    }}
-                    className="result-card-grid group"
-                  >
-                    <img
-                      src={spriteUrl}
-                      alt={`${displayName} thumbnail`}
-                      loading="lazy"
-                      referrerPolicy="no-referrer"
-                      className="h-28 w-28 object-contain transition-transform group-hover:scale-110"
-                      onError={(e) => {
-                        const target = e.currentTarget;
-                        if (!target.src.includes("/placeholder.svg")) {
-                          target.src = "/placeholder.svg";
-                        }
-                      }}
-                    />
-                    <span className="mt-2 text-sm font-bold capitalize text-foreground">
-                      {displayName}
-                    </span>
-                    {types.length > 0 && (
-                      <div className="mt-1.5 flex flex-wrap justify-center gap-1">
-                        {types.map((type) => (
-                          <span
-                            key={type}
-                            className="type-badge"
-                            style={{
-                              backgroundColor: TYPE_COLORS[type] || "hsl(var(--muted))",
-                              color: needsDarkText(type) ? "#333" : "#fff",
-                            }}
-                          >
-                            {type}
-                          </span>
-                        ))}
-                      </div>
-                    )}
-                  </Link>
-                );
-              })}
-            </div>
-
-            {results.length === 0 && <atomic-no-results />}
+            <atomic-no-results />
             <atomic-query-error />
 
             <div className="mt-8 flex justify-center">
