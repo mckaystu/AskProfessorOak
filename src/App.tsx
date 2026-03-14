@@ -166,7 +166,7 @@ function App() {
                         ))}
                       </div>
                     )}
-                  </a>
+                  </Link>
                 );
               })}
             </div>
