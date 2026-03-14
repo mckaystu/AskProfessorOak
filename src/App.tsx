@@ -126,7 +126,9 @@ function App() {
     max-without-query="3">
   </atomic-search-box-query-suggestions>
 
-  <atomic-search-box-recent-queries></atomic-search-box-recent-queries></atomic-search-box>atomic-search-box></atomic-search-box>
+  <atomic-search-box-recent-queries>
+  </atomic-search-box-recent-queries>
+              </atomic-search-box>atomic-search-box></atomic-search-box>
             </div>
 
             <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
