@@ -1,4 +1,6 @@
 import { useParams, useLocation, Link } from "react-router-dom";
+import { useEffect } from "react";
+import { CoveoAnalyticsClient } from "coveo.analytics";
 
 const TYPE_COLORS: Record<string, string> = {
   Normal: "#A8A77A", Fire: "#EE8130", Water: "#6390F0", Electric: "#F7D02C",
