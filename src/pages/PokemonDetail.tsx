@@ -24,6 +24,21 @@ const PokemonDetail = () => {
   const location = useLocation();
   const state = (location.state as LocationState) || {};
 
+  useEffect(() => {
+    if (!name) return;
+
+    const client = new CoveoAnalyticsClient({
+      token: "xx3824fb63-5208-448c-b651-64d479c921ce",
+    });
+
+    client.sendViewEvent({
+      contentIdKey: "pokemonname",
+      contentIdValue: name,
+      contentType: "Pokemon",
+      title: `${name.charAt(0).toUpperCase() + name.slice(1)} Detail Page`,
+    });
+  }, [name]);
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       <header className="border-b border-border bg-card px-6 py-4 flex items-center gap-4">
