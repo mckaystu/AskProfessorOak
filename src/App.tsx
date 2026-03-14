@@ -81,7 +81,7 @@ function App() {
       <div className="mx-auto max-w-3xl">
         <atomic-search-interface
           pipeline="PKSearch"
-          search-hub="MainSearch"
+          search-hub="pokemon-search"
           fields-to-include='["pokemon_thumbnail","pokemongeneration","poketype","pokemonname","pokemonspecies"]'
         >
           <atomic-search-layout>
