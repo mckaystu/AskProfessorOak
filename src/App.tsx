@@ -44,7 +44,7 @@ function App() {
       <atomic-search-interface
         pipeline="PKSearch"
         search-hub="pokemon-search"
-        fields-to-include='["pokemon_thumbnail","pokemongeneration","poketype","pokemonname","pokemonspecies","pokemonhp"]'
+        fields-to-include='["pokemon_thumbnail","pokemongeneration","poketype","pokemonname","pokemonspecies"]'
       >
         <div className="flex min-h-[calc(100vh-65px)]">
           {/* Sidebar Facets */}
@@ -62,17 +62,12 @@ function App() {
                 with-search="false"
                 display-values-as="checkbox"
               />
-              <atomic-numeric-facet
-                field="pokemonhp"
-                label="HP"
-                with-input="input"
-                display-values-as="link"
-              >
-                <atomic-numeric-range start="0" end="50" label="0–50" />
-                <atomic-numeric-range start="51" end="100" label="51–100" />
-                <atomic-numeric-range start="101" end="150" label="101–150" />
-                <atomic-numeric-range start="151" end="255" label="151+" />
-              </atomic-numeric-facet>
+              <atomic-facet
+                field="pokemonspecies"
+                label="Species"
+                with-search="false"
+                display-values-as="checkbox"
+              />
             </atomic-facet-manager>
           </aside>
 
@@ -90,8 +85,6 @@ function App() {
                 <atomic-sort-expression label="Relevance" expression="relevancy" />
                 <atomic-sort-expression label="Name A–Z" expression="pokemonname ascending" />
                 <atomic-sort-expression label="Name Z–A" expression="pokemonname descending" />
-                <atomic-sort-expression label="HP: Low → High" expression="pokemonhp ascending" />
-                <atomic-sort-expression label="HP: High → Low" expression="pokemonhp descending" />
               </atomic-sort-dropdown>
             </div>
 
