@@ -28,7 +28,7 @@ const PokemonDetail = () => {
         <Link to="/" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
           ← Back to Search
         </Link>
-        <h1 className="text-3xl font-bold text-destructive tracking-tight capitalize">
+        <h1 className="text-3xl font-bold text-foreground tracking-tight capitalize">
           {name}
         </h1>
       </header>
