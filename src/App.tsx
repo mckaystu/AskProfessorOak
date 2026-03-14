@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import "./App.css";
 
 declare global {
@@ -9,7 +9,50 @@ declare global {
   }
 }
 
+interface SearchResult {
+  uniqueId: string;
+  title: string;
+  clickUri: string;
+  raw?: {
+    pokemon_thumbnail?: string | string[];
+    poketype?: string | string[];
+    pokemonname?: string | string[];
+    pokemonspecies?: string | string[];
+  };
+}
+
+const getStringField = (value: unknown): string => {
+  if (Array.isArray(value) && value.length > 0) return String(value[0]);
+  if (typeof value === "string") return value;
+  return "";
+};
+
+const getStringArrayField = (value: unknown): string[] => {
+  if (Array.isArray(value)) return value.map(String);
+  if (typeof value === "string") return [value];
+  return [];
+};
+
+const getThumbnailUrl = (result: SearchResult): string => {
+  const raw = result.raw?.pokemon_thumbnail;
+  if (Array.isArray(raw) && raw.length > 0) return raw[0];
+  if (typeof raw === "string") return raw;
+  return "/placeholder.svg";
+};
+
+const TYPE_COLORS: Record<string, string> = {
+  Normal: "#A8A77A", Fire: "#EE8130", Water: "#6390F0", Electric: "#F7D02C",
+  Grass: "#7AC74C", Ice: "#96D9D6", Fighting: "#C22E28", Poison: "#A33EA1",
+  Ground: "#E2BF65", Flying: "#A98FF3", Psychic: "#F95587", Bug: "#A6B91A",
+  Rock: "#B6A136", Ghost: "#735797", Dragon: "#6F35FC", Dark: "#705746",
+  Steel: "#B7B7CE", Fairy: "#D685AD", Stellar: "#40B5A5",
+};
+
+const needsDarkText = (type: string) => ["Electric", "Ice", "Steel"].includes(type);
+
 function App() {
+  const [results, setResults] = useState<SearchResult[]>([]);
+
   useEffect(() => {
     const init = async () => {
       await customElements.whenDefined("atomic-search-interface");
@@ -25,6 +68,10 @@ function App() {
 
         const engine = searchInterface.engine;
         if (engine) {
+          engine.subscribe(() => {
+            const state = engine.state;
+            setResults(state?.search?.results || []);
+          });
           engine.executeFirstSearch();
         }
       } catch (error) {
@@ -50,35 +97,18 @@ function App() {
           {/* Sidebar Facets */}
           <aside className="facet-sidebar w-72 shrink-0 border-r border-border bg-card p-5 overflow-y-auto">
             <atomic-facet-manager>
-              <atomic-facet
-                field="poketype"
-                label="Type"
-                with-search="false"
-                display-values-as="checkbox"
-              />
-              <atomic-facet
-                field="pokemongeneration"
-                label="Generation"
-                with-search="false"
-                display-values-as="checkbox"
-              />
-              <atomic-facet
-                field="pokemonspecies"
-                label="Species"
-                with-search="false"
-                display-values-as="checkbox"
-              />
+              <atomic-facet field="poketype" label="Type" with-search="false" display-values-as="checkbox" />
+              <atomic-facet field="pokemongeneration" label="Generation" with-search="false" display-values-as="checkbox" />
+              <atomic-facet field="pokemonspecies" label="Species" with-search="false" display-values-as="checkbox" />
             </atomic-facet-manager>
           </aside>
 
           {/* Main Content */}
           <main className="flex-1 p-6 overflow-y-auto">
-            {/* Search Bar */}
             <div className="mb-6">
               <atomic-search-box placeholder="Search for a Pokémon (e.g., Pikachu or 025)..." />
             </div>
 
-            {/* Status Bar */}
             <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
               <atomic-query-summary />
               <atomic-sort-dropdown>
@@ -90,71 +120,61 @@ function App() {
 
             <atomic-breadbox className="mb-4" />
 
-            {/* Grid Result List */}
-            <atomic-result-list
-              display="grid"
-              density="comfortable"
-              image-size="large"
-            >
-              <atomic-result-template>
-                <template>
-                  <style>{`
-                    .result-card-grid {
-                      display: flex;
-                      flex-direction: column;
-                      align-items: center;
-                      padding: 16px;
-                      border: 1px solid hsl(214.3, 31.8%, 91.4%);
-                      border-radius: 12px;
-                      background: hsl(0, 0%, 100%);
-                      transition: box-shadow 0.2s, transform 0.2s;
-                      text-align: center;
-                      height: 100%;
-                    }
-                    .result-card-grid:hover {
-                      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-                      transform: translateY(-2px);
-                    }
-                    .pokemon-sprite {
-                      width: 120px;
-                      height: 120px;
-                      object-fit: contain;
-                      margin-bottom: 8px;
-                    }
-                    .pokemon-grid-name {
-                      font-weight: 700;
-                      font-size: 1.1rem;
-                      text-transform: capitalize;
-                      margin-bottom: 6px;
-                      color: hsl(222.2, 84%, 4.9%);
-                    }
-                    .pokemon-grid-name a {
-                      color: inherit;
-                      text-decoration: none;
-                    }
-                    .pokemon-grid-name a:hover {
-                      text-decoration: underline;
-                    }
-                  `}</style>
-                  <div className="result-card-grid">
-                    <atomic-result-image
-                      field="pokemon_thumbnail"
-                      className="pokemon-sprite"
-                      fallback="/placeholder.svg"
-                    />
-                    <div className="pokemon-grid-name">
-                      <atomic-result-link />
-                    </div>
-                    <atomic-result-badge field="poketype" />
-                  </div>
-                </template>
-              </atomic-result-template>
-            </atomic-result-list>
+            {/* Grid Results */}
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+              {results.map((result) => {
+                const displayName = getStringField(result.raw?.pokemonname) || result.title;
+                const types = getStringArrayField(result.raw?.poketype);
+                const spriteUrl = getThumbnailUrl(result);
 
-            <atomic-no-results />
+                return (
+                  <a
+                    key={result.uniqueId}
+                    href={result.clickUri}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="result-card-grid group"
+                  >
+                    <img
+                      src={spriteUrl}
+                      alt={`${displayName} thumbnail`}
+                      loading="lazy"
+                      referrerPolicy="no-referrer"
+                      className="h-28 w-28 object-contain transition-transform group-hover:scale-110"
+                      onError={(e) => {
+                        const target = e.currentTarget;
+                        if (!target.src.includes("/placeholder.svg")) {
+                          target.src = "/placeholder.svg";
+                        }
+                      }}
+                    />
+                    <span className="mt-2 text-sm font-bold capitalize text-foreground">
+                      {displayName}
+                    </span>
+                    {types.length > 0 && (
+                      <div className="mt-1.5 flex flex-wrap justify-center gap-1">
+                        {types.map((type) => (
+                          <span
+                            key={type}
+                            className="type-badge"
+                            style={{
+                              backgroundColor: TYPE_COLORS[type] || "hsl(var(--muted))",
+                              color: needsDarkText(type) ? "#333" : "#fff",
+                            }}
+                          >
+                            {type}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </a>
+                );
+              })}
+            </div>
+
+            {results.length === 0 && <atomic-no-results />}
             <atomic-query-error />
 
-            {/* Pagination */}
             <div className="mt-8 flex justify-center">
               <atomic-pager />
             </div>
