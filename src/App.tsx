@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import oakAvatar from "./assets/professor-oak.png";
 import "./App.css";
 
 declare global {
