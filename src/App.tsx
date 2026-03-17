@@ -107,9 +107,9 @@ function App() {
           {/* Sidebar Facets */}
           <aside className="facet-sidebar w-72 shrink-0 border-r border-border bg-card p-5 overflow-y-auto">
             <atomic-facet-manager>
-              <atomic-facet field="poketype" label="Type" with-search="false" display-values-as="checkbox" />
-              <atomic-facet field="pokemongeneration" label="Generation" with-search="false" display-values-as="checkbox" />
-              <atomic-facet field="pokemonspecies" label="Species" with-search="false" display-values-as="checkbox" />
+              <atomic-facet field="pokemongeneration" label="Generation" with-search="false" display-values-as="checkbox" number-of-values="6" />
+              <atomic-facet field="poketype" label="Type" with-search="false" display-values-as="checkbox" number-of-values="6" />
+              <atomic-facet field="pokemonspecies" label="Species" with-search="false" display-values-as="checkbox" number-of-values="6" />
             </atomic-facet-manager>
           </aside>
 
