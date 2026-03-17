@@ -89,7 +89,13 @@ function App() {
             alt="Professor Oak"
             className="h-12 w-12 rounded-full object-cover border-2 border-primary shadow-sm"
           />
-          <h1 className="text-3xl font-bold text-destructive tracking-tight">Ask Professor Oak</h1>
+          <h1 className="text-3xl font-bold text-destructive tracking-tight whitespace-nowrap">Ask Professor Oak</h1>
+          <div className="flex-1 min-w-0">
+            <atomic-search-box placeholder="Search for a Pokémon (e.g., Pikachu or 025)...">
+              <atomic-search-box-query-suggestions max-with-query="5" max-without-query="3" />
+              <atomic-search-box-recent-queries />
+            </atomic-search-box>
+          </div>
         </div>
       </header>
 
