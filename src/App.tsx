@@ -44,7 +44,6 @@ const getThumbnailUrl = (result: SearchResult): string => {
   return "/placeholder.svg";
 };
 
-
 function App() {
   const [results, setResults] = useState<SearchResult[]>([]);
   const engineRef = useRef<any>(null);
@@ -85,7 +84,7 @@ function App() {
       <atomic-search-interface
         pipeline="PKSearch"
         search-hub="pokemon-search"
-        fields-to-include='["pokemon_thumbnail","pokemongeneration","poketype","pokemonname","pokemonspecies"]'
+        fields-to-include='["pokemon_thumbnail","description","pokemongeneration","poketype","pokemonname","pokemonspecies"]'
       >
         <header className="border-b border-border bg-card px-6 py-4">
           <div className="flex items-center gap-4">
@@ -107,27 +106,40 @@ function App() {
           {/* Sidebar Facets */}
           <aside className="facet-sidebar w-72 shrink-0 border-r border-border bg-card p-5 overflow-y-auto">
             <atomic-facet-manager collapse-facets-after="6">
-              <atomic-facet field="pokemongeneration" label="Generation" with-search="false" display-values-as="checkbox" number-of-values="6" />
-              <atomic-facet field="poketype" label="Type" with-search="false" display-values-as="checkbox" number-of-values="6" />
-              <atomic-facet field="pokemonspecies" label="Species" with-search="false" display-values-as="checkbox" number-of-values="6" />
+              <atomic-facet
+                field="pokemongeneration"
+                label="Generation"
+                with-search="false"
+                display-values-as="checkbox"
+                number-of-values="6"
+              />
+              <atomic-facet
+                field="poketype"
+                label="Type"
+                with-search="false"
+                display-values-as="checkbox"
+                number-of-values="6"
+              />
+              <atomic-facet
+                field="pokemonspecies"
+                label="Species"
+                with-search="false"
+                display-values-as="checkbox"
+                number-of-values="6"
+              />
             </atomic-facet-manager>
           </aside>
 
           {/* Main Content */}
           <main className="flex-1 p-6 overflow-y-auto">
-
             {/* --- RGA COMPONENT START --- */}
             <atomic-layout-section section="status">
-              <atomic-generated-answer
-                with-hover-card="true"
-                answer-style="step"
-              >
+              <atomic-generated-answer with-hover-card="true" answer-style="step">
                 <atomic-generated-answer-copy-button></atomic-generated-answer-copy-button>
                 <atomic-generated-answer-feedback></atomic-generated-answer-feedback>
               </atomic-generated-answer>
             </atomic-layout-section>
             {/* --- RGA COMPONENT END --- */}
-
 
             <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
               <atomic-query-summary />
@@ -189,17 +201,11 @@ function App() {
                         }
                       }}
                     />
-                    <span className="mt-2 text-sm font-bold capitalize text-foreground">
-                      {displayName}
-                    </span>
+                    <span className="mt-2 text-sm font-bold capitalize text-foreground">{displayName}</span>
                     {types.length > 0 && (
                       <div className="mt-1.5 flex flex-wrap justify-center gap-1">
                         {types.map((type) => (
-                          <span
-                            key={type}
-                            className="type-badge"
-                            data-type={type.toLowerCase()}
-                          >
+                          <span key={type} className="type-badge" data-type={type.toLowerCase()}>
                             {type}
                           </span>
                         ))}
@@ -208,14 +214,10 @@ function App() {
                     {(species || generation) && (
                       <div className="mt-1.5 flex flex-wrap justify-center gap-1 text-[0.6rem] text-muted-foreground">
                         {species && (
-                          <span className="rounded-full bg-secondary px-2 py-0.5 font-medium">
-                            {species}
-                          </span>
+                          <span className="rounded-full bg-secondary px-2 py-0.5 font-medium">{species}</span>
                         )}
                         {generation && (
-                          <span className="rounded-full bg-secondary px-2 py-0.5 font-medium">
-                            {generation}
-                          </span>
+                          <span className="rounded-full bg-secondary px-2 py-0.5 font-medium">{generation}</span>
                         )}
                       </div>
                     )}
