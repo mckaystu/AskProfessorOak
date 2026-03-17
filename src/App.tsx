@@ -132,6 +132,8 @@ function App() {
               {results.map((result) => {
                 const displayName = getStringField(result.raw?.pokemonname) || result.title;
                 const types = getStringArrayField(result.raw?.poketype);
+                const species = getStringField(result.raw?.pokemonspecies);
+                const generation = getStringField(result.raw?.pokemongeneration);
                 const spriteUrl = getThumbnailUrl(result);
 
                 return (
