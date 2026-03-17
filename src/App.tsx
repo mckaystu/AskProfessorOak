@@ -192,6 +192,20 @@ function App() {
                         ))}
                       </div>
                     )}
+                    {(species || generation) && (
+                      <div className="mt-1.5 flex flex-wrap justify-center gap-1 text-[0.6rem] text-muted-foreground">
+                        {species && (
+                          <span className="rounded-full bg-secondary px-2 py-0.5 font-medium">
+                            {species}
+                          </span>
+                        )}
+                        {generation && (
+                          <span className="rounded-full bg-secondary px-2 py-0.5 font-medium">
+                            {generation}
+                          </span>
+                        )}
+                      </div>
+                    )}
                   </a>
                 );
               })}
