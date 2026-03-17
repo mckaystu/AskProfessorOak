@@ -148,6 +148,8 @@ function App() {
                         documentTitle: displayName,
                         documentPosition: results.indexOf(result) + 1,
                         searchQueryUid: engineRef.current?.state?.search?.searchResponseId || "",
+                        sourceName: "pokemon-search",
+                        actionCause: "documentOpen",
                       });
                       navigate(`/pokemon/${displayName.toLowerCase()}`, {
                         state: {
