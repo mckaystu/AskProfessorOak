@@ -148,12 +148,17 @@ function App() {
                   <a
                     key={result.uniqueId}
                     onClick={() => {
-                      if (engineRef.current) {
-                        const interactiveResult = buildInteractiveResult(engineRef.current, {
-                          options: { result: result as any },
-                        });
-                        interactiveResult.select();
-                      }
+                      const client = new CoveoAnalyticsClient({
+                        token: "xx3824fb63-5208-448c-b651-64d479c921ce",
+                      });
+                      client.sendClickEvent({
+                        documentUri: result.clickUri,
+                        documentUriHash: result.uniqueId,
+                        documentTitle: displayName,
+                        documentPosition: results.indexOf(result) + 1,
+                        searchQueryUid: engineRef.current?.state?.search?.searchResponseId || "",
+                        queryText: engineRef.current?.state?.query?.q || "",
+                      });
                       navigate(`/pokemon/${displayName.toLowerCase()}`, {
                         state: {
                           thumbnail: spriteUrl,
