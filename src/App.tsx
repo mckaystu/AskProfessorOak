@@ -192,10 +192,7 @@ function App() {
                           <span
                             key={type}
                             className="type-badge"
-                            style={{
-                              backgroundColor: TYPE_COLORS[type] || "hsl(var(--muted))",
-                              color: needsDarkText(type) ? "#333" : "#fff",
-                            }}
+                            data-type={type.toLowerCase()}
                           >
                             {type}
                           </span>
