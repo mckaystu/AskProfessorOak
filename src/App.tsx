@@ -105,6 +105,7 @@ function App() {
       <atomic-search-interface
         pipeline="PKSearch"
         search-hub="pokemon-search"
+        reflect-state-in-url="true"
         fields-to-include='["pokemon_thumbnail","pokemongeneration","poketype","pokemonname","pokemonspecies"]'
       >
         <div className="flex min-h-[calc(100vh-65px)]">
