@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { CoveoAnalyticsClient } from "coveo.analytics";
+import { TypeFacet } from "./components/TypeFacet";
 import oakAvatar from "./assets/professor-oak.png";
 import "./App.css";
 
