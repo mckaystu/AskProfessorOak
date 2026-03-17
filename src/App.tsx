@@ -1,8 +1,7 @@
+import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import oakAvatar from "./assets/professor-oak.png";
 import "./App.css";
-
-// No more @coveo/headless imports needed for state!
 
 declare global {
   namespace JSX {
@@ -12,38 +11,61 @@ declare global {
   }
 }
 
-const TYPE_COLORS: Record<string, string> = {
-  Normal: "#A8A77A",
-  Fire: "#EE8130",
-  Water: "#6390F0",
-  Electric: "#F7D02C",
-  Grass: "#7AC74C",
-  Ice: "#96D9D6",
-  Fighting: "#C22E28",
-  Poison: "#A33EA1",
-  Ground: "#E2BF65",
-  Flying: "#A98FF3",
-  Psychic: "#F95587",
-  Bug: "#A6B91A",
-  Rock: "#B6A136",
-  Ghost: "#735797",
-  Dragon: "#6F35FC",
-  Dark: "#705746",
-  Steel: "#B7B7CE",
-  Fairy: "#D685AD",
-  Stellar: "#40B5A5",
-};
-
-const needsDarkText = (type: string) => ["Electric", "Ice", "Steel"].includes(type);
-
 function App() {
   const navigate = useNavigate();
+  const resultListRef = useRef<HTMLElement>(null);
 
-  // Helper to extract fields from the Atomic result object safely
-  const getRawValue = (result: any, field: string) => {
-    const val = result.raw[field];
-    return Array.isArray(val) ? val[0] : val;
-  };
+  // Attach click listener to result cards for navigation
+  useEffect(() => {
+    const resultList = resultListRef.current;
+    if (!resultList) return;
+
+    const handleClick = (e: Event) => {
+      const target = e.target as HTMLElement;
+      const card = target.closest(".pokemon-card") as HTMLElement;
+      if (!card) return;
+
+      const atomicResult = card.closest("atomic-result") as any;
+      if (!atomicResult?.result) return;
+
+      const raw = atomicResult.result.raw;
+      const name = (Array.isArray(raw.pokemonname) ? raw.pokemonname[0] : raw.pokemonname) || atomicResult.result.title;
+
+      navigate(`/pokemon/${name.toLowerCase()}`, {
+        state: {
+          thumbnail: Array.isArray(raw.pokemon_thumbnail) ? raw.pokemon_thumbnail[0] : raw.pokemon_thumbnail,
+          types: raw.poketype,
+          species: Array.isArray(raw.pokemonspecies) ? raw.pokemonspecies[0] : raw.pokemonspecies,
+          generation: Array.isArray(raw.pokemongeneration) ? raw.pokemongeneration[0] : raw.pokemongeneration,
+        },
+      });
+    };
+
+    resultList.addEventListener("click", handleClick);
+    return () => resultList.removeEventListener("click", handleClick);
+  }, [navigate]);
+
+  const resultTemplate = `
+    <style>
+      .pokemon-card {
+        text-align: center;
+        padding: 1rem;
+        cursor: pointer;
+        transition: transform 0.2s;
+      }
+      .pokemon-card:hover {
+        transform: scale(1.05);
+      }
+    </style>
+    <div class="pokemon-card">
+      <atomic-result-image field="pokemon_thumbnail"></atomic-result-image>
+      <atomic-result-text field="pokemonname" class="text-sm font-bold capitalize mt-2" style="display:block;"></atomic-result-text>
+      <atomic-result-text field="pokedesc" class="text-xs mt-1" style="display:block; opacity:0.7; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;"></atomic-result-text>
+      <div class="mt-2" style="display:flex; flex-wrap:wrap; justify-content:center; gap:4px;">
+        <atomic-result-multi-value-text field="poketype" delimiter=" "></atomic-result-multi-value-text>
+      </div>
+    </div>
+  `;
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -58,7 +80,6 @@ function App() {
         </div>
       </header>
 
-      {/* Pure Atomic Interface: handles its own initialization and URL state */}
       <atomic-search-interface
         pipeline="PKSearch"
         search-hub="pokemon-search"
@@ -78,8 +99,9 @@ function App() {
 
           <main className="flex-1 p-6 overflow-y-auto">
             <div className="mb-6">
-              <atomic-search-box allow-wildcards="true" placeholder="Search for a Pokémon (e.g., Pika* or 025)...">
-                <atomic-search-box-query-suggestions />
+              <atomic-search-box placeholder="Search for a Pokémon (e.g., Pika* or 025)...">
+                <atomic-search-box-query-suggestions max-with-query="5" max-without-query="3" />
+                <atomic-search-box-recent-queries />
               </atomic-search-box>
             </div>
 
@@ -93,49 +115,9 @@ function App() {
 
             <atomic-breadbox className="mb-4" />
 
-            {/* Use atomic-result-list with a template instead of manual mapping */}
-            <atomic-result-list display="grid" image-size="large">
+            <atomic-result-list ref={resultListRef} display="grid" image-size="large">
               <atomic-result-template>
-                <template>
-                  <style>{`
-                    .pokemon-card { text-align: center; padding: 1rem; cursor: pointer; transition: transform 0.2s; }
-                    .pokemon-card:hover { transform: scale(1.05); }
-                    .type-badge { padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; margin: 2px; }
-                  `}</style>
-
-                  <div
-                    className="pokemon-card"
-                    onClick={(e: any) => {
-                      // Logic to navigate using the data from the result
-                      const result = (e.currentTarget as any).closest("atomic-result").result;
-                      const name = getRawValue(result, "pokemonname") || result.title;
-                      navigate(`/pokemon/${name.toLowerCase()}`, {
-                        state: {
-                          thumbnail: getRawValue(result, "pokemon_thumbnail"),
-                          types: result.raw.poketype,
-                          species: getRawValue(result, "pokemonspecies"),
-                          generation: getRawValue(result, "pokemongeneration"),
-                        },
-                      });
-                    }}
-                  >
-                    <atomic-result-image field="pokemon_thumbnail" />
-                    <atomic-result-title className="text-sm font-bold capitalize mt-2" />
-
-                    {/* The new pokedesc field we added to the scraper! */}
-                    <atomic-result-text field="pokedesc" className="text-xs text-muted-foreground line-clamp-2" />
-
-                    <div className="mt-2 flex flex-wrap justify-center">
-                      <atomic-result-multi-value-text field="poketype">
-                        <template>
-                          <span className="type-badge" style={{ backgroundColor: "orange", color: "white" }}>
-                            <atomic-result-text field="poketype" />
-                          </span>
-                        </template>
-                      </atomic-result-multi-value-text>
-                    </div>
-                  </div>
-                </template>
+                <template dangerouslySetInnerHTML={{ __html: resultTemplate }} />
               </atomic-result-template>
             </atomic-result-list>
 
