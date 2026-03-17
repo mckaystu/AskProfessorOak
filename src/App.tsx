@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { buildInteractiveResult } from "@coveo/headless";
+import { useNavigate } from "react-router-dom";
+import { CoveoAnalyticsClient } from "coveo.analytics";
 import oakAvatar from "./assets/professor-oak.png";
 import "./App.css";
 
