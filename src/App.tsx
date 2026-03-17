@@ -116,6 +116,19 @@ function App() {
           {/* Main Content */}
           <main className="flex-1 p-6 overflow-y-auto">
 
+            {/* --- RGA COMPONENT START --- */}
+            <atomic-layout-section section="status">
+              <atomic-generated-answer
+                with-hover-card="true"
+                answer-style="step"
+              >
+                <atomic-generated-answer-copy-button></atomic-generated-answer-copy-button>
+                <atomic-generated-answer-feedback></atomic-generated-answer-feedback>
+              </atomic-generated-answer>
+            </atomic-layout-section>
+            {/* --- RGA COMPONENT END --- */}
+
+
             <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
               <atomic-query-summary />
               <atomic-sort-dropdown>
