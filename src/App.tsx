@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { buildInteractiveResult } from "@coveo/headless";
+import { useNavigate } from "react-router-dom";
+import { CoveoAnalyticsClient } from "coveo.analytics";
 import oakAvatar from "./assets/professor-oak.png";
 import "./App.css";
 
@@ -44,15 +44,6 @@ const getThumbnailUrl = (result: SearchResult): string => {
   return "/placeholder.svg";
 };
 
-const TYPE_COLORS: Record<string, string> = {
-  Normal: "#A8A77A", Fire: "#EE8130", Water: "#6390F0", Electric: "#F7D02C",
-  Grass: "#7AC74C", Ice: "#96D9D6", Fighting: "#C22E28", Poison: "#A33EA1",
-  Ground: "#E2BF65", Flying: "#A98FF3", Psychic: "#F95587", Bug: "#A6B91A",
-  Rock: "#B6A136", Ghost: "#735797", Dragon: "#6F35FC", Dark: "#705746",
-  Steel: "#B7B7CE", Fairy: "#D685AD", Stellar: "#40B5A5",
-};
-
-const needsDarkText = (type: string) => ["Electric", "Ice", "Steel"].includes(type);
 
 function App() {
   const [results, setResults] = useState<SearchResult[]>([]);
@@ -148,12 +139,18 @@ function App() {
                   <a
                     key={result.uniqueId}
                     onClick={() => {
-                      if (engineRef.current) {
-                        const interactiveResult = buildInteractiveResult(engineRef.current, {
-                          options: { result: result as any },
-                        });
-                        interactiveResult.select();
-                      }
+                      const client = new CoveoAnalyticsClient({
+                        token: "xx3824fb63-5208-448c-b651-64d479c921ce",
+                      });
+                      client.sendClickEvent({
+                        documentUri: result.clickUri,
+                        documentUriHash: result.uniqueId,
+                        documentTitle: displayName,
+                        documentPosition: results.indexOf(result) + 1,
+                        searchQueryUid: engineRef.current?.state?.search?.searchResponseId || "",
+                        sourceName: "pokemon-search",
+                        actionCause: "documentOpen",
+                      });
                       navigate(`/pokemon/${displayName.toLowerCase()}`, {
                         state: {
                           thumbnail: spriteUrl,
@@ -187,10 +184,7 @@ function App() {
                           <span
                             key={type}
                             className="type-badge"
-                            style={{
-                              backgroundColor: TYPE_COLORS[type] || "hsl(var(--muted))",
-                              color: needsDarkText(type) ? "#333" : "#fff",
-                            }}
+                            data-type={type.toLowerCase()}
                           >
                             {type}
                           </span>
