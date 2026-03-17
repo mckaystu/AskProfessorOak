@@ -132,6 +132,8 @@ function App() {
               {results.map((result) => {
                 const displayName = getStringField(result.raw?.pokemonname) || result.title;
                 const types = getStringArrayField(result.raw?.poketype);
+                const species = getStringField(result.raw?.pokemonspecies);
+                const generation = getStringField(result.raw?.pokemongeneration);
                 const spriteUrl = getThumbnailUrl(result);
 
                 return (
@@ -188,6 +190,20 @@ function App() {
                             {type}
                           </span>
                         ))}
+                      </div>
+                    )}
+                    {(species || generation) && (
+                      <div className="mt-1.5 flex flex-wrap justify-center gap-1 text-[0.6rem] text-muted-foreground">
+                        {species && (
+                          <span className="rounded-full bg-secondary px-2 py-0.5 font-medium">
+                            {species}
+                          </span>
+                        )}
+                        {generation && (
+                          <span className="rounded-full bg-secondary px-2 py-0.5 font-medium">
+                            {generation}
+                          </span>
+                        )}
                       </div>
                     )}
                   </a>
