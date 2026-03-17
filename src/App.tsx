@@ -82,28 +82,27 @@ function App() {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <header className="border-b border-border bg-card px-6 py-4">
-        <div className="flex items-center gap-4">
-          <img
-            src={oakAvatar}
-            alt="Professor Oak"
-            className="h-12 w-12 rounded-full object-cover border-2 border-primary shadow-sm"
-          />
-          <h1 className="text-3xl font-bold text-destructive tracking-tight whitespace-nowrap">Ask Professor Oak</h1>
-          <div className="flex-1 min-w-0">
-            <atomic-search-box placeholder="Search for a Pokémon (e.g., Pikachu or 025)...">
-              <atomic-search-box-query-suggestions max-with-query="5" max-without-query="3" />
-              <atomic-search-box-recent-queries />
-            </atomic-search-box>
-          </div>
-        </div>
-      </header>
-
       <atomic-search-interface
         pipeline="PKSearch"
         search-hub="pokemon-search"
         fields-to-include='["pokemon_thumbnail","pokemongeneration","poketype","pokemonname","pokemonspecies"]'
       >
+        <header className="border-b border-border bg-card px-6 py-4">
+          <div className="flex items-center gap-4">
+            <img
+              src={oakAvatar}
+              alt="Professor Oak"
+              className="h-12 w-12 rounded-full object-cover border-2 border-primary shadow-sm"
+            />
+            <h1 className="text-3xl font-bold text-destructive tracking-tight whitespace-nowrap">Ask Professor Oak</h1>
+            <div className="flex-1 min-w-0">
+              <atomic-search-box placeholder="Search for a Pokémon (e.g., Pikachu or 025)...">
+                <atomic-search-box-query-suggestions max-with-query="5" max-without-query="3" />
+                <atomic-search-box-recent-queries />
+              </atomic-search-box>
+            </div>
+          </div>
+        </header>
         <div className="flex min-h-[calc(100vh-65px)]">
           {/* Sidebar Facets */}
           <aside className="facet-sidebar w-72 shrink-0 border-r border-border bg-card p-5 overflow-y-auto">
