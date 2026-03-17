@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { CoveoAnalyticsClient } from "coveo.analytics";
+import { TypeFacet } from "./components/TypeFacet";
 import oakAvatar from "./assets/professor-oak.png";
 import "./App.css";
 
@@ -105,10 +106,14 @@ function App() {
         </header>
         <div className="flex min-h-[calc(100vh-65px)]">
           {/* Sidebar Facets */}
-          <aside className="facet-sidebar w-72 shrink-0 border-r border-border bg-card p-5 overflow-y-auto">
+          <aside className="facet-sidebar w-64 shrink-0 border-r border-border bg-card px-4 py-3 overflow-y-auto">
             <atomic-facet-manager collapse-facets-after="6">
               <atomic-facet field="pokemongeneration" label="Generation" with-search="false" display-values-as="checkbox" number-of-values="6" />
-              <atomic-facet field="poketype" label="Type" with-search="false" display-values-as="checkbox" number-of-values="6" />
+            </atomic-facet-manager>
+
+            <TypeFacet engine={engineRef.current} />
+
+            <atomic-facet-manager>
               <atomic-facet field="pokemonspecies" label="Species" with-search="false" display-values-as="checkbox" number-of-values="6" />
             </atomic-facet-manager>
           </aside>

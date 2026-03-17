@@ -8,7 +8,32 @@ atomic-search-interface {
 .facet-sidebar atomic-facet,
 .facet-sidebar atomic-numeric-facet {
   display: block;
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.facet-sidebar atomic-facet::part(facet) {
+  padding: 0;
+}
+
+/* Type tile button */
+.type-tile {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 9999px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.15s, outline 0.15s, transform 0.15s;
+  line-height: 1.6;
+}
+
+.type-tile:hover {
+  opacity: 0.85 !important;
+  transform: scale(1.05);
 }
 
 /* Grid result card */
