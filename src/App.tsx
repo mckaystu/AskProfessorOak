@@ -84,7 +84,7 @@ function App() {
       <atomic-search-interface
         pipeline="PKSearch"
         search-hub="pokemon-search"
-        fields-to-include='["pokemon_thumbnail","description","pokemongeneration","poketype","pokemonname","pokemonspecies"]'
+        fields-to-include='["pokemon_thumbnail","description","Body","pokemongeneration","poketype","pokemonname","pokemonspecies"]'
       >
         <header className="border-b border-border bg-card px-6 py-4">
           <div className="flex items-center gap-4">
