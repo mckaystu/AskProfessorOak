@@ -148,7 +148,6 @@ function App() {
                         documentTitle: displayName,
                         documentPosition: results.indexOf(result) + 1,
                         searchQueryUid: engineRef.current?.state?.search?.searchResponseId || "",
-                        queryText: engineRef.current?.state?.query?.q || "",
                       });
                       navigate(`/pokemon/${displayName.toLowerCase()}`, {
                         state: {
