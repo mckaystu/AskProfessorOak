@@ -111,21 +111,21 @@ function App() {
                 label="Generation"
                 with-search="false"
                 display-values-as="checkbox"
-                number-of-values="6"
+                number-of-values="4"
               />
               <atomic-facet
                 field="poketype"
                 label="Type"
                 with-search="false"
                 display-values-as="checkbox"
-                number-of-values="6"
+                number-of-values="4"
               />
               <atomic-facet
                 field="pokemonspecies"
                 label="Species"
                 with-search="false"
                 display-values-as="checkbox"
-                number-of-values="6"
+                number-of-values="4"
               />
             </atomic-facet-manager>
           </aside>
