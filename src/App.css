@@ -65,3 +65,30 @@ atomic-search-interface {
 .type-badge[data-type="steel"]    { background-color: #B7B7CE; color: #333; }
 .type-badge[data-type="fairy"]    { background-color: #D685AD; }
 .type-badge[data-type="stellar"]  { background-color: #40B5A5; }
+
+/* Oak's Corner sidebar */
+.oaks-corner {
+  background: linear-gradient(180deg, hsl(var(--card)) 0%, hsl(var(--background)) 100%);
+}
+
+/* Style the AI answer container */
+atomic-generated-answer::part(container) {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid #ef5350;
+  border-left: 5px solid #ef5350;
+  border-radius: 8px;
+  backdrop-filter: blur(10px);
+}
+
+/* Style the text where the answer appears */
+atomic-generated-answer::part(answer) {
+  font-family: 'Courier New', monospace;
+  color: #ffffff;
+}
+
+/* Style the Citations (the passages found) */
+atomic-generated-answer::part(citation) {
+  background: #333;
+  border-radius: 4px;
+  color: #ffcb05;
+}
