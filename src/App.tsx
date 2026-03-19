@@ -164,6 +164,7 @@ function App() {
                 return (
                   <a
                     key={result.uniqueId}
+                   {/* --- It creates a CoveoAnalyticsClient, calls sendClickEvent(), then navigates to the detail page. --- */}
                     onClick={() => {
                       const client = new CoveoAnalyticsClient({
                         token: "xx3824fb63-5208-448c-b651-64d479c921ce",
