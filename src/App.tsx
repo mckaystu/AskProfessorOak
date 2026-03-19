@@ -1,6 +1,4 @@
-import { useEffect, useState, useRef } from "react";
-import { useNavigate } from "react-router-dom";
-import { CoveoAnalyticsClient } from "coveo.analytics";
+import { useEffect, useRef } from "react";
 import oakAvatar from "./assets/professor-oak.png";
 import "./App.css";
 
@@ -12,42 +10,8 @@ declare global {
   }
 }
 
-interface SearchResult {
-  uniqueId: string;
-  title: string;
-  clickUri: string;
-  raw?: {
-    pokemon_thumbnail?: string | string[];
-    poketype?: string | string[];
-    pokemonname?: string | string[];
-    pokemonspecies?: string | string[];
-    pokemongeneration?: string | string[];
-  };
-}
-
-const getStringField = (value: unknown): string => {
-  if (Array.isArray(value) && value.length > 0) return String(value[0]);
-  if (typeof value === "string") return value;
-  return "";
-};
-
-const getStringArrayField = (value: unknown): string[] => {
-  if (Array.isArray(value)) return value.map(String);
-  if (typeof value === "string") return [value];
-  return [];
-};
-
-const getThumbnailUrl = (result: SearchResult): string => {
-  const raw = result.raw?.pokemon_thumbnail;
-  if (Array.isArray(raw) && raw.length > 0) return raw[0];
-  if (typeof raw === "string") return raw;
-  return "/placeholder.svg";
-};
-
 function App() {
-  const [results, setResults] = useState<SearchResult[]>([]);
-  const engineRef = useRef<any>(null);
-  const navigate = useNavigate();
+  const resultListRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     const init = async () => {
@@ -64,17 +28,89 @@ function App() {
 
         const engine = searchInterface.engine;
         if (engine) {
-          engineRef.current = engine;
-          engine.subscribe(() => {
-            const state = engine.state;
-            setResults(state?.search?.results || []);
-          });
           engine.executeFirstSearch();
         }
       } catch (error) {
         console.error("Failed to initialize Coveo Atomic:", error);
       }
     };
+
+    // Inject the template into atomic-result-list since React can't render inside <template>
+    if (resultListRef.current) {
+      const templateEl = document.createElement("atomic-result-template");
+      const tpl = document.createElement("template");
+      tpl.innerHTML = `
+        <style>
+          .result-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 16px;
+            border: 1px solid hsl(var(--border));
+            border-radius: 12px;
+            background: hsl(var(--card));
+            transition: box-shadow 0.2s, transform 0.2s;
+            text-align: center;
+            cursor: pointer;
+          }
+          .result-card:hover {
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+            transform: translateY(-2px);
+          }
+          atomic-result-image img {
+            height: 112px;
+            width: 112px;
+            object-fit: contain;
+          }
+          .result-name {
+            margin-top: 8px;
+            font-size: 0.875rem;
+            font-weight: 700;
+            text-transform: capitalize;
+            color: hsl(var(--foreground));
+          }
+          .result-types {
+            margin-top: 6px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 4px;
+          }
+          .result-meta {
+            margin-top: 6px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 4px;
+            font-size: 0.6rem;
+            color: hsl(var(--muted-foreground));
+          }
+          .result-meta span {
+            background: hsl(var(--secondary));
+            border-radius: 9999px;
+            padding: 2px 8px;
+            font-weight: 500;
+          }
+        </style>
+        <div class="result-card">
+          <atomic-result-image field="pokemon_thumbnail" fallback="/placeholder.svg"></atomic-result-image>
+          <atomic-result-link class="result-name"></atomic-result-link>
+          <div class="result-types">
+            <atomic-result-multi-value-text field="poketype"></atomic-result-multi-value-text>
+          </div>
+          <div class="result-meta">
+            <atomic-field-condition class="result-meta-item" if-defined="pokemonspecies">
+              <span><atomic-result-text field="pokemonspecies"></atomic-result-text></span>
+            </atomic-field-condition>
+            <atomic-field-condition class="result-meta-item" if-defined="pokemongeneration">
+              <span><atomic-result-text field="pokemongeneration"></atomic-result-text></span>
+            </atomic-field-condition>
+          </div>
+        </div>
+      `;
+      templateEl.appendChild(tpl);
+      resultListRef.current.appendChild(templateEl);
+    }
 
     void init();
   }, []);
@@ -132,14 +168,13 @@ function App() {
 
           {/* Main Content */}
           <main className="flex-1 p-6 overflow-y-auto">
-            {/* --- RGA COMPONENT START --- */}
+            {/* --- RGA COMPONENT --- */}
             <atomic-layout-section section="status">
               <atomic-generated-answer with-hover-card="true" answer-style="step">
                 <atomic-generated-answer-copy-button></atomic-generated-answer-copy-button>
                 <atomic-generated-answer-feedback></atomic-generated-answer-feedback>
               </atomic-generated-answer>
             </atomic-layout-section>
-            {/* --- RGA COMPONENT END --- */}
 
             <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
               <atomic-query-summary />
@@ -152,82 +187,15 @@ function App() {
 
             <atomic-breadbox className="mb-4" />
 
-            {/* Grid Results */}
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-              {results.map((result) => {
-                const displayName = getStringField(result.raw?.pokemonname) || result.title;
-                const types = getStringArrayField(result.raw?.poketype);
-                const species = getStringField(result.raw?.pokemonspecies);
-                const generation = getStringField(result.raw?.pokemongeneration);
-                const spriteUrl = getThumbnailUrl(result);
+            {/* Atomic-native result list */}
+            <atomic-result-list
+              ref={resultListRef}
+              display="grid"
+              image-size="small"
+              density="compact"
+            />
 
-                return (
-                  <a
-                    key={result.uniqueId}
-                   
-                    onClick={() => {
-                      const client = new CoveoAnalyticsClient({
-                        token: "xx3824fb63-5208-448c-b651-64d479c921ce",
-                      });
-                      client.sendClickEvent({
-                        documentUri: result.clickUri,
-                        documentUriHash: result.uniqueId,
-                        documentTitle: displayName,
-                        documentPosition: results.indexOf(result) + 1,
-                        searchQueryUid: engineRef.current?.state?.search?.searchResponseId || "",
-                        sourceName: "pokemon-search",
-                        actionCause: "documentOpen",
-                      });
-                      navigate(`/pokemon/${displayName.toLowerCase()}`, {
-                        state: {
-                          thumbnail: spriteUrl,
-                          types,
-                          species: getStringField(result.raw?.pokemonspecies),
-                          generation: getStringField(result.raw?.pokemongeneration),
-                        },
-                      });
-                    }}
-                    className="result-card-grid group cursor-pointer"
-                  >
-                    <img
-                      src={spriteUrl}
-                      alt={`${displayName} thumbnail`}
-                      loading="lazy"
-                      referrerPolicy="no-referrer"
-                      className="h-28 w-28 object-contain transition-transform group-hover:scale-110"
-                      onError={(e) => {
-                        const target = e.currentTarget;
-                        if (!target.src.includes("/placeholder.svg")) {
-                          target.src = "/placeholder.svg";
-                        }
-                      }}
-                    />
-                    <span className="mt-2 text-sm font-bold capitalize text-foreground">{displayName}</span>
-                    {types.length > 0 && (
-                      <div className="mt-1.5 flex flex-wrap justify-center gap-1">
-                        {types.map((type) => (
-                          <span key={type} className="type-badge" data-type={type.toLowerCase()}>
-                            {type}
-                          </span>
-                        ))}
-                      </div>
-                    )}
-                    {(species || generation) && (
-                      <div className="mt-1.5 flex flex-wrap justify-center gap-1 text-[0.6rem] text-muted-foreground">
-                        {species && (
-                          <span className="rounded-full bg-secondary px-2 py-0.5 font-medium">{species}</span>
-                        )}
-                        {generation && (
-                          <span className="rounded-full bg-secondary px-2 py-0.5 font-medium">{generation}</span>
-                        )}
-                      </div>
-                    )}
-                  </a>
-                );
-              })}
-            </div>
-
-            {results.length === 0 && <atomic-no-results />}
+            <atomic-no-results />
             <atomic-query-error />
 
             <div className="mt-8 flex justify-center">
