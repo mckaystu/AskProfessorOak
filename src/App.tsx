@@ -132,14 +132,6 @@ function App() {
 
           {/* Main Content */}
           <main className="flex-1 p-6 overflow-y-auto">
-            {/* --- RGA COMPONENT START --- */}
-            <atomic-layout-section section="status">
-              <atomic-generated-answer with-hover-card="true" answer-style="step">
-                <atomic-generated-answer-copy-button></atomic-generated-answer-copy-button>
-                <atomic-generated-answer-feedback></atomic-generated-answer-feedback>
-              </atomic-generated-answer>
-            </atomic-layout-section>
-            {/* --- RGA COMPONENT END --- */}
 
             <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
               <atomic-query-summary />
@@ -234,6 +226,26 @@ function App() {
               <atomic-pager />
             </div>
           </main>
+
+          {/* Oak's Corner Sidebar */}
+          <aside className="oaks-corner w-80 shrink-0 border-l border-border bg-card p-5 overflow-y-auto">
+            <div className="flex items-center gap-2 mb-4">
+              <img
+                src={oakAvatar}
+                alt="Professor Oak"
+                className="h-8 w-8 rounded-full object-cover border-2 border-destructive shadow-sm"
+              />
+              <h2 className="text-lg font-bold text-destructive tracking-tight">Oak's Corner</h2>
+            </div>
+            <atomic-generated-answer
+              heading-level="2"
+              with-hover-card="true"
+              answer-style="step"
+            >
+              <atomic-generated-answer-copy-button></atomic-generated-answer-copy-button>
+              <atomic-generated-answer-feedback></atomic-generated-answer-feedback>
+            </atomic-generated-answer>
+          </aside>
         </div>
       </atomic-search-interface>
     </div>
