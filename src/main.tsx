@@ -1,7 +1,7 @@
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import App from "./App.tsx";
-import PokemonDetail from "./pages/PokemonDetail.tsx";
+import App from "./App";
+import PokemonDetail from "./pages/PokemonDetail";
 import "./index.css";
 
 createRoot(document.getElementById("root")!).render(
