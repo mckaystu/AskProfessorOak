@@ -85,7 +85,8 @@ function App() {
         pipeline="PKSearch"
         search-hub="pokemon-search"
         fields-to-include='["pokemon_thumbnail","description","Body","pokemongeneration","poketype","pokemonname","pokemonspecies"]'
-        constant-query-override='@source=="PKDB"'
+        //constant-query-override='@source=="PKDB"' removed March 20
+        static-filter='@source=="PKDB"'
       >
         <header className="border-b border-border bg-card px-6 py-4">
           <div className="flex items-center gap-4">
@@ -133,7 +134,6 @@ function App() {
 
           {/* Main Content */}
           <main className="flex-1 p-6 overflow-y-auto">
-
             <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
               <atomic-query-summary />
               <atomic-sort-dropdown>
@@ -157,7 +157,6 @@ function App() {
                 return (
                   <a
                     key={result.uniqueId}
-                   
                     onClick={() => {
                       const client = new CoveoAnalyticsClient({
                         token: "xx3824fb63-5208-448c-b651-64d479c921ce",
@@ -238,11 +237,7 @@ function App() {
               />
               <h2 className="text-lg font-bold text-destructive tracking-tight">Oak's Corner</h2>
             </div>
-            <atomic-generated-answer
-              heading-level="2"
-              with-hover-card="true"
-              answer-style="step"
-            >
+            <atomic-generated-answer heading-level="2" with-hover-card="true" answer-style="step">
               <atomic-generated-answer-copy-button></atomic-generated-answer-copy-button>
               <atomic-generated-answer-feedback></atomic-generated-answer-feedback>
             </atomic-generated-answer>
