@@ -85,6 +85,7 @@ function App() {
         pipeline="PKSearch"
         search-hub="pokemon-search"
         fields-to-include='["pokemon_thumbnail","description","Body","pokemongeneration","poketype","pokemonname","pokemonspecies"]'
+        constant-query-override='@source=="PKDB"'
       >
         <header className="border-b border-border bg-card px-6 py-4">
           <div className="flex items-center gap-4">
