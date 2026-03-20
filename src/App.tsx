@@ -86,7 +86,7 @@ function App() {
         search-hub="pokemon-search"
         fields-to-include='["pokemon_thumbnail","description","Body","pokemongeneration","poketype","pokemonname","pokemonspecies"]'
         //constant-query-override='@source=="PKDB"' removed March 20
-        static-filter='@source=="PKDB"'
+        //static-filter='@source=="PKDB"' removed March 20 to avoid double filtering. logic moved to pipeline filter
       >
         <header className="border-b border-border bg-card px-6 py-4">
           <div className="flex items-center gap-4">
