@@ -225,15 +225,43 @@ function App() {
             </div>
           </main>
 
-          {/* Oak's Corner */}
-          <aside className="oaks-corner border-l border-border bg-card p-5 overflow-y-auto" style={{ flex: '0 0 35%' }}>
-            <div className="flex items-center gap-2 mb-4">
-              <img
-                src={oakAvatar}
-                alt="Professor Oak"
-                className="h-8 w-8 rounded-full object-cover border-2 border-destructive shadow-sm"
-              />
-              <h2 className="text-lg font-bold text-destructive tracking-tight">Oak's Corner</h2>
+          {/* Oak's Corner Toggle Button */}
+          {!rgaVisible && !oakManuallyOpen && (
+            <button
+              onClick={() => setOakManuallyOpen(true)}
+              className="absolute right-0 top-4 z-10 flex items-center gap-1 rounded-l-lg border border-r-0 border-border bg-card px-2 py-3 text-destructive shadow-md transition-transform hover:scale-105"
+              title="Open Oak's Corner"
+            >
+              <img src={oakAvatar} alt="Oak" className="h-6 w-6 rounded-full" />
+            </button>
+          )}
+
+          {/* Oak's Corner Slide-out */}
+          <aside
+            className={`oaks-corner border-l border-border bg-card p-5 overflow-y-auto transition-all duration-300 ease-in-out ${
+              rgaVisible || oakManuallyOpen
+                ? "w-[35%] opacity-100"
+                : "w-0 p-0 opacity-0 overflow-hidden border-l-0"
+            }`}
+          >
+            <div className="flex items-center justify-between gap-2 mb-4 min-w-[200px]">
+              <div className="flex items-center gap-2">
+                <img
+                  src={oakAvatar}
+                  alt="Professor Oak"
+                  className="h-8 w-8 rounded-full object-cover border-2 border-destructive shadow-sm"
+                />
+                <h2 className="text-lg font-bold text-destructive tracking-tight whitespace-nowrap">Oak's Corner</h2>
+              </div>
+              {!rgaVisible && oakManuallyOpen && (
+                <button
+                  onClick={() => setOakManuallyOpen(false)}
+                  className="text-muted-foreground hover:text-foreground text-sm"
+                  title="Close"
+                >
+                  ✕
+                </button>
+              )}
             </div>
             <atomic-generated-answer heading-level="2" with-hover-card="true" answer-style="step">
               <atomic-generated-answer-copy-button />
