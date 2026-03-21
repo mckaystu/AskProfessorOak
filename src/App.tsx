@@ -108,7 +108,7 @@ function App() {
           </div>
         </header>
 
-        <div className="flex min-h-[calc(100vh-65px)]">
+        <div className="flex min-h-[calc(100vh-65px)] relative">
           {/* Facet Sidebar */}
           <aside className="facet-sidebar border-r border-border bg-card p-3 overflow-y-auto text-sm" style={{ flex: '0 0 25%' }}>
             <atomic-facet-manager collapse-facets-after="6">
