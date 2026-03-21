@@ -93,9 +93,7 @@ function App() {
               alt="Professor Oak"
               className="h-12 w-12 rounded-full object-cover border-2 border-primary shadow-sm"
             />
-            <h1 className="text-3xl font-bold text-destructive tracking-tight whitespace-nowrap">
-              Ask Professor Oak
-            </h1>
+            <h1 className="text-3xl font-bold text-destructive tracking-tight whitespace-nowrap">Ask Professor Oak</h1>
             <div className="flex-1 min-w-0">
               <atomic-search-box placeholder="Search for a Pokémon (e.g., Pikachu or 025)...">
                 <atomic-search-box-query-suggestions max-with-query="5" max-without-query="3" />
@@ -109,9 +107,27 @@ function App() {
           {/* Facet Sidebar */}
           <aside className="facet-sidebar w-56 shrink-0 border-r border-border bg-card p-3 overflow-y-auto text-sm">
             <atomic-facet-manager collapse-facets-after="6">
-              <atomic-facet field="pokemongeneration" label="Generation" with-search="false" display-values-as="checkbox" number-of-values="4" />
-              <atomic-facet field="poketype" label="Type" with-search="false" display-values-as="checkbox" number-of-values="4" />
-              <atomic-facet field="pokemonspecies" label="Species" with-search="false" display-values-as="checkbox" number-of-values="4" />
+              <atomic-facet
+                field="pokemongeneration"
+                label="Generation"
+                with-search="false"
+                display-values-as="checkbox"
+                number-of-values="4"
+              />
+              <atomic-facet
+                field="poketype"
+                label="Type"
+                with-search="false"
+                display-values-as="checkbox"
+                number-of-values="4"
+              />
+              <atomic-facet
+                field="pokemonspecies"
+                label="Species"
+                with-search="false"
+                display-values-as="checkbox"
+                number-of-values="4"
+              />
             </atomic-facet-manager>
           </aside>
 
@@ -183,8 +199,12 @@ function App() {
                     )}
                     {(species || generation) && (
                       <div className="mt-1.5 flex flex-wrap justify-center gap-1 text-[0.6rem] text-muted-foreground">
-                        {species && <span className="rounded-full bg-secondary px-2 py-0.5 font-medium">{species}</span>}
-                        {generation && <span className="rounded-full bg-secondary px-2 py-0.5 font-medium">{generation}</span>}
+                        {species && (
+                          <span className="rounded-full bg-secondary px-2 py-0.5 font-medium">{species}</span>
+                        )}
+                        {generation && (
+                          <span className="rounded-full bg-secondary px-2 py-0.5 font-medium">{generation}</span>
+                        )}
                       </div>
                     )}
                   </a>
@@ -201,7 +221,7 @@ function App() {
           </main>
 
           {/* Oak's Corner */}
-          <aside className="oaks-corner w-96 shrink-0 border-l border-border bg-card p-5 overflow-y-auto">
+          <aside className="oaks-corner w-120 shrink-0 border-l border-border bg-card p-5 overflow-y-auto">
             <div className="flex items-center gap-2 mb-4">
               <img
                 src={oakAvatar}
