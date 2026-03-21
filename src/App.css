@@ -93,3 +93,19 @@ atomic-generated-answer::part(citation) {
   border-radius: 4px;
   color: #ffcb05;
 }
+
+/* Make tables in RGA answers wider */
+atomic-generated-answer table {
+  width: 100%;
+  min-width: 100%;
+}
+
+atomic-generated-answer::part(answer) table,
+.oaks-corner table {
+  width: 100%;
+}
+
+.oaks-corner atomic-generated-answer {
+  width: 100%;
+  display: block;
+}
