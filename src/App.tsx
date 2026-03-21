@@ -105,7 +105,7 @@ function App() {
 
         <div className="flex min-h-[calc(100vh-65px)]">
           {/* Facet Sidebar */}
-          <aside className="facet-sidebar w-50 shrink-0 border-r border-border bg-card p-3 overflow-y-auto text-sm">
+          <aside className="facet-sidebar border-r border-border bg-card p-3 overflow-y-auto text-sm" style={{ flex: '0 0 25%' }}>
             <atomic-facet-manager collapse-facets-after="6">
               <atomic-facet
                 field="pokemongeneration"
@@ -132,7 +132,7 @@ function App() {
           </aside>
 
           {/* Main Results */}
-          <main className="flex-1 p-6 overflow-y-auto">
+          <main className="p-6 overflow-y-auto" style={{ flex: '0 0 40%' }}>
             <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
               <atomic-query-summary />
               <atomic-sort-dropdown>
@@ -221,7 +221,7 @@ function App() {
           </main>
 
           {/* Oak's Corner */}
-          <aside className="oaks-corner w-120 shrink-0 border-l border-border bg-card p-5 overflow-y-auto">
+          <aside className="oaks-corner border-l border-border bg-card p-5 overflow-y-auto" style={{ flex: '0 0 35%' }}>
             <div className="flex items-center gap-2 mb-4">
               <img
                 src={oakAvatar}
