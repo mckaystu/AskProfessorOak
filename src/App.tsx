@@ -221,7 +221,7 @@ function App() {
           </main>
 
           {/* Oak's Corner */}
-          <aside className="oaks-corner w-120 shrink-0 border-l border-border bg-card p-5 overflow-y-auto">
+          <aside className="oaks-corner border-l border-border bg-card p-5 overflow-y-auto" style={{ flex: '0 0 35%' }}>
             <div className="flex items-center gap-2 mb-4">
               <img
                 src={oakAvatar}
