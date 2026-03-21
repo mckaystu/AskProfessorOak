@@ -132,7 +132,7 @@ function App() {
           </aside>
 
           {/* Main Results */}
-          <main className="flex-1 p-6 overflow-y-auto">
+          <main className="p-6 overflow-y-auto" style={{ flex: '0 0 40%' }}>
             <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
               <atomic-query-summary />
               <atomic-sort-dropdown>
