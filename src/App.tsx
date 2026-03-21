@@ -128,7 +128,7 @@ function App() {
 
             <atomic-breadbox className="mb-4" />
 
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-3">
               {results.map((result) => {
                 const displayName = getStringField(result.raw?.pokemonname) || result.title;
                 const types = getStringArrayField(result.raw?.poketype);
@@ -201,7 +201,7 @@ function App() {
           </main>
 
           {/* Oak's Corner */}
-          <aside className="oaks-corner w-80 shrink-0 border-l border-border bg-card p-5 overflow-y-auto">
+          <aside className="oaks-corner w-96 shrink-0 border-l border-border bg-card p-5 overflow-y-auto">
             <div className="flex items-center gap-2 mb-4">
               <img
                 src={oakAvatar}
