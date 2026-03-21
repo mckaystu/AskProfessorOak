@@ -4,6 +4,9 @@ import { CoveoAnalyticsClient } from "coveo.analytics";
 import oakAvatar from "./assets/professor-oak.png";
 import "./App.css";
 
+/* ------------------------------------------------------------------ */
+/*  TypeScript declarations for Coveo Atomic web-component tags        */
+/* ------------------------------------------------------------------ */
 declare global {
   namespace JSX {
     interface IntrinsicElements {
@@ -12,6 +15,9 @@ declare global {
   }
 }
 
+/* ------------------------------------------------------------------ */
+/*  Types                                                              */
+/* ------------------------------------------------------------------ */
 interface SearchResult {
   uniqueId: string;
   title: string;
@@ -25,6 +31,9 @@ interface SearchResult {
   };
 }
 
+/* ------------------------------------------------------------------ */
+/*  Field helpers — Coveo fields can arrive as string or string[]      */
+/* ------------------------------------------------------------------ */
 const getStringField = (value: unknown): string => {
   if (Array.isArray(value) && value.length > 0) return String(value[0]);
   if (typeof value === "string") return value;
@@ -44,6 +53,15 @@ const getThumbnailUrl = (result: SearchResult): string => {
   return "/placeholder.svg";
 };
 
+/* ------------------------------------------------------------------ */
+/*  Coveo credentials                                                  */
+/* ------------------------------------------------------------------ */
+const COVEO_ORG_ID = "stumckaytechnicalsuccesspokemontestmh1o8r76";
+const COVEO_API_KEY = "xx3824fb63-5208-448c-b651-64d479c921ce";
+
+/* ================================================================== */
+/*  App Component                                                      */
+/* ================================================================== */
 function App() {
   const [results, setResults] = useState<SearchResult[]>([]);
   const [rgaVisible, setRgaVisible] = useState(false);
@@ -51,6 +69,7 @@ function App() {
   const engineRef = useRef<any>(null);
   const navigate = useNavigate();
 
+  /* ---- Initialize Coveo Atomic search engine on mount ------------ */
   useEffect(() => {
     const init = async () => {
       await customElements.whenDefined("atomic-search-interface");
@@ -60,21 +79,28 @@ function App() {
 
       try {
         await searchInterface.initialize({
-          accessToken: "xx3824fb63-5208-448c-b651-64d479c921ce",
-          organizationId: "stumckaytechnicalsuccesspokemontestmh1o8r76",
+          accessToken: COVEO_API_KEY,
+          organizationId: COVEO_ORG_ID,
         });
 
         const engine = searchInterface.engine;
         if (engine) {
           engineRef.current = engine;
+
+          // Subscribe to engine state changes to sync React state
           engine.subscribe(() => {
             const state = engine.state;
             setResults(state?.search?.results || []);
+
+            // Show Oak's Corner only when RGA has content for the current query
             const ga = state?.generatedAnswer;
             const query = state?.query?.q || "";
-            const hasAnswer = query.trim().length > 0 && (ga?.isStreaming || (ga?.answer && ga.answer.length > 0));
+            const hasAnswer =
+              query.trim().length > 0 &&
+              (ga?.isStreaming || (ga?.answer && ga.answer.length > 0));
             setRgaVisible(!!hasAnswer);
           });
+
           engine.executeFirstSearch();
         }
       } catch (error) {
@@ -85,6 +111,23 @@ function App() {
     void init();
   }, []);
 
+  /* ---- Send a Coveo click-analytics event ------------------------ */
+  const sendClickEvent = (result: SearchResult, displayName: string) => {
+    const client = new CoveoAnalyticsClient({ token: COVEO_API_KEY });
+    client.sendClickEvent({
+      documentUri: result.clickUri,
+      documentUriHash: result.uniqueId,
+      documentTitle: displayName,
+      documentPosition: results.indexOf(result) + 1,
+      searchQueryUid: engineRef.current?.state?.search?.searchResponseId || "",
+      sourceName: "pokemon-search",
+      actionCause: "documentOpen",
+    });
+  };
+
+  /* ================================================================ */
+  /*  Render                                                           */
+  /* ================================================================ */
   return (
     <div className="min-h-screen bg-background text-foreground">
       <atomic-search-interface
@@ -92,6 +135,7 @@ function App() {
         search-hub="pokemon-search"
         fields-to-include='["pokemon_thumbnail","description","Body","pokemongeneration","poketype","pokemonname","pokemonspecies"]'
       >
+        {/* ---- Header with search box ---- */}
         <header className="border-b border-border bg-card px-6 py-4">
           <div className="flex items-center gap-4">
             <img
@@ -99,7 +143,9 @@ function App() {
               alt="Professor Oak"
               className="h-12 w-12 rounded-full object-cover border-2 border-primary shadow-sm"
             />
-            <h1 className="text-3xl font-bold text-destructive tracking-tight whitespace-nowrap">Ask Professor Oak</h1>
+            <h1 className="text-3xl font-bold text-destructive tracking-tight whitespace-nowrap">
+              Ask Professor Oak
+            </h1>
             <div className="flex-1 min-w-0">
               <atomic-search-box placeholder="Search for a Pokémon (e.g., Pikachu or 025)...">
                 <atomic-search-box-query-suggestions max-with-query="5" max-without-query="3" />
@@ -109,47 +155,36 @@ function App() {
           </div>
         </header>
 
+        {/* ---- Three-column body ---- */}
         <div className="flex min-h-[calc(100vh-65px)] relative">
-          {/* Facet Sidebar */}
-          <aside className="facet-sidebar border-r border-border bg-card p-3 overflow-y-auto text-sm" style={{ flex: '0 0 15%' }}>
+
+          {/* Column 1 — Facet sidebar (15%) */}
+          <aside
+            className="facet-sidebar border-r border-border bg-card p-3 overflow-y-auto text-sm"
+            style={{ flex: "0 0 15%" }}
+          >
             <atomic-facet-manager collapse-facets-after="6">
-              <atomic-facet
-                field="pokemongeneration"
-                label="Generation"
-                with-search="false"
-                display-values-as="checkbox"
-                number-of-values="4"
-              />
-              <atomic-facet
-                field="poketype"
-                label="Type"
-                with-search="false"
-                display-values-as="checkbox"
-                number-of-values="4"
-              />
-              <atomic-facet
-                field="pokemonspecies"
-                label="Species"
-                with-search="false"
-                display-values-as="checkbox"
-                number-of-values="4"
-              />
+              <atomic-facet field="pokemongeneration" label="Generation" with-search="false" display-values-as="checkbox" number-of-values="4" />
+              <atomic-facet field="poketype"           label="Type"       with-search="false" display-values-as="checkbox" number-of-values="4" />
+              <atomic-facet field="pokemonspecies"      label="Species"    with-search="false" display-values-as="checkbox" number-of-values="4" />
             </atomic-facet-manager>
           </aside>
 
-          {/* Main Results */}
+          {/* Column 2 — Results grid */}
           <main className="flex-1 p-6 overflow-y-auto transition-all duration-300">
+            {/* Toolbar: result count + sort */}
             <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
               <atomic-query-summary />
               <atomic-sort-dropdown>
-                <atomic-sort-expression label="Relevance" expression="relevancy" />
-                <atomic-sort-expression label="Name A–Z" expression="pokemonname ascending" />
-                <atomic-sort-expression label="Name Z–A" expression="pokemonname descending" />
+                <atomic-sort-expression label="Relevance"  expression="relevancy" />
+                <atomic-sort-expression label="Name A–Z"   expression="pokemonname ascending" />
+                <atomic-sort-expression label="Name Z–A"   expression="pokemonname descending" />
               </atomic-sort-dropdown>
             </div>
 
             <atomic-breadbox className="mb-4" />
 
+            {/* Pokémon card grid */}
             <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 lg:grid-cols-4">
               {results.map((result) => {
                 const displayName = getStringField(result.raw?.pokemonname) || result.title;
@@ -162,24 +197,14 @@ function App() {
                   <a
                     key={result.uniqueId}
                     onClick={() => {
-                      const client = new CoveoAnalyticsClient({
-                        token: "xx3824fb63-5208-448c-b651-64d479c921ce",
-                      });
-                      client.sendClickEvent({
-                        documentUri: result.clickUri,
-                        documentUriHash: result.uniqueId,
-                        documentTitle: displayName,
-                        documentPosition: results.indexOf(result) + 1,
-                        searchQueryUid: engineRef.current?.state?.search?.searchResponseId || "",
-                        sourceName: "pokemon-search",
-                        actionCause: "documentOpen",
-                      });
+                      sendClickEvent(result, displayName);
                       navigate(`/pokemon/${displayName.toLowerCase()}`, {
                         state: { thumbnail: spriteUrl, types, species, generation },
                       });
                     }}
                     className="result-card-grid group cursor-pointer"
                   >
+                    {/* Sprite */}
                     <img
                       src={spriteUrl}
                       alt={`${displayName} thumbnail`}
@@ -193,7 +218,13 @@ function App() {
                         }
                       }}
                     />
-                    <span className="mt-2 text-sm font-bold capitalize text-foreground">{displayName}</span>
+
+                    {/* Name */}
+                    <span className="mt-2 text-sm font-bold capitalize text-foreground">
+                      {displayName}
+                    </span>
+
+                    {/* Type badges */}
                     {types.length > 0 && (
                       <div className="mt-1.5 flex flex-wrap justify-center gap-1">
                         {types.map((type) => (
@@ -203,6 +234,8 @@ function App() {
                         ))}
                       </div>
                     )}
+
+                    {/* Species & generation tags */}
                     {(species || generation) && (
                       <div className="mt-1.5 flex flex-wrap justify-center gap-1 text-[0.6rem] text-muted-foreground">
                         {species && (
@@ -226,7 +259,7 @@ function App() {
             </div>
           </main>
 
-          {/* Oak's Corner Toggle Button */}
+          {/* Oak's Corner toggle button (shown when sidebar is collapsed) */}
           {!rgaVisible && !oakManuallyOpen && (
             <button
               onClick={() => setOakManuallyOpen(true)}
@@ -237,7 +270,7 @@ function App() {
             </button>
           )}
 
-          {/* Oak's Corner Slide-out */}
+          {/* Column 3 — Oak's Corner (RGA slide-out sidebar) */}
           <aside
             className={`oaks-corner border-l border-border bg-card p-5 overflow-y-auto transition-all duration-300 ease-in-out ${
               rgaVisible || oakManuallyOpen
@@ -252,7 +285,9 @@ function App() {
                   alt="Professor Oak"
                   className="h-8 w-8 rounded-full object-cover border-2 border-destructive shadow-sm"
                 />
-                <h2 className="text-lg font-bold text-destructive tracking-tight whitespace-nowrap">Oak's Corner</h2>
+                <h2 className="text-lg font-bold text-destructive tracking-tight whitespace-nowrap">
+                  Oak's Corner
+                </h2>
               </div>
               {!rgaVisible && oakManuallyOpen && (
                 <button
@@ -264,6 +299,7 @@ function App() {
                 </button>
               )}
             </div>
+
             <atomic-generated-answer heading-level="2" with-hover-card="true" answer-style="step">
               <atomic-generated-answer-copy-button />
               <atomic-generated-answer-feedback />
