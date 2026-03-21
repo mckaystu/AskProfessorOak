@@ -111,7 +111,7 @@ function App() {
 
         <div className="flex min-h-[calc(100vh-65px)] relative">
           {/* Facet Sidebar */}
-          <aside className="facet-sidebar border-r border-border bg-card p-3 overflow-y-auto text-sm" style={{ flex: '0 0 25%' }}>
+          <aside className="facet-sidebar border-r border-border bg-card p-3 overflow-y-auto text-sm" style={{ flex: '0 0 15%' }}>
             <atomic-facet-manager collapse-facets-after="6">
               <atomic-facet
                 field="pokemongeneration"
