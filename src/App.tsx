@@ -46,6 +46,8 @@ const getThumbnailUrl = (result: SearchResult): string => {
 
 function App() {
   const [results, setResults] = useState<SearchResult[]>([]);
+  const [rgaVisible, setRgaVisible] = useState(false);
+  const [oakManuallyOpen, setOakManuallyOpen] = useState(false);
   const engineRef = useRef<any>(null);
   const navigate = useNavigate();
 
