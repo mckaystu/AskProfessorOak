@@ -8,7 +8,8 @@ atomic-search-interface {
 .facet-sidebar atomic-facet,
 .facet-sidebar atomic-numeric-facet {
   display: block;
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
+  font-size: 0.8rem;
 }
 
 /* Grid result card */
