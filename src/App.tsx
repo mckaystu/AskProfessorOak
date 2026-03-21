@@ -70,6 +70,9 @@ function App() {
           engine.subscribe(() => {
             const state = engine.state;
             setResults(state?.search?.results || []);
+            const ga = state?.generatedAnswer;
+            const hasAnswer = ga?.isVisible || (ga?.answer && ga.answer.length > 0);
+            setRgaVisible(!!hasAnswer);
           });
           engine.executeFirstSearch();
         }
